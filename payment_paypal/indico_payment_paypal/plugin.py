@@ -16,7 +16,7 @@
 
 from __future__ import unicode_literals
 
-from wtforms.fields.core import StringField
+from wtforms.fields.core import StringField, BooleanField
 from wtforms.fields.html5 import URLField
 from wtforms.validators import DataRequired, Optional
 
@@ -25,10 +25,13 @@ from indico.modules.events.payment import (PaymentEventSettingsFormBase, Payment
                                            PaymentPluginSettingsFormBase)
 from indico.util.string import remove_accents, unicode_to_ascii
 from indico.web.forms.validators import UsedIf
+from indico.web.forms.widgets import SwitchWidget
 
 from indico_payment_paypal import _
 from indico_payment_paypal.blueprint import blueprint
 from indico_payment_paypal.util import validate_business
+
+from babel.numbers import format_currency
 
 
 class PluginSettingsForm(PaymentPluginSettingsFormBase):
@@ -36,12 +39,16 @@ class PluginSettingsForm(PaymentPluginSettingsFormBase):
     business = StringField(_('Business'), [Optional(), validate_business],
                            description=_('The default PayPal ID or email address associated with a PayPal account. '
                                          'Event managers will be able to override this.'))
+    itemize = BooleanField(_('Itemize PayPal Cart'), [Optional()], widget=SwitchWidget(),
+                           description=_('Enable to send an itemized cart to PayPal.'))
 
 
 class EventSettingsForm(PaymentEventSettingsFormBase):
     business = StringField(_('Business'), [UsedIf(lambda form, _: form.enabled.data), DataRequired(),
                                            validate_business],
                            description=_('The PayPal ID or email address associated with a PayPal account.'))
+    itemize = BooleanField(_('Itemize PayPal Cart'), [Optional()], widget=SwitchWidget(), 
+                           description=_('Enable to send an itemized cart to PayPal.'))
 
 
 class PaypalPaymentPlugin(PaymentPluginMixin, IndicoPlugin):
@@ -54,10 +61,12 @@ class PaypalPaymentPlugin(PaymentPluginMixin, IndicoPlugin):
     event_settings_form = EventSettingsForm
     default_settings = {'method_name': 'PayPal',
                         'url': 'https://www.paypal.com/cgi-bin/webscr',
-                        'business': ''}
+                        'business': '',
+                        'itemize': False}
     default_event_settings = {'enabled': False,
                               'method_name': None,
-                              'business': None}
+                              'business': None,
+                              'itemize': False}
 
     @property
     def logo_url(self):
@@ -76,3 +85,67 @@ class PaypalPaymentPlugin(PaymentPluginMixin, IndicoPlugin):
         data['return_url'] = url_for_plugin('payment_paypal.success', registration.locator.uuid, _external=True)
         data['cancel_url'] = url_for_plugin('payment_paypal.cancel', registration.locator.uuid, _external=True)
         data['notify_url'] = url_for_plugin('payment_paypal.notify', registration.locator.uuid, _external=True)
+
+# PayPal Itemized cart get all billable items
+        itemized_data = []
+        if registration.base_price:
+            choice = {
+                      'title': 'Registration Fee'.
+                      'price': format_currency(registration.base_price, '', u'#0.00', locale='en_US'),
+                      'quantity': 1,
+                      'price_info': registration.base_price_info
+                     }
+            itemized_data.append(choice)
+
+        for section, fields in registration.summary_data.iteritems():            
+            for field, regdata in fields.iteritems():
+                friendly_data  = regdata.friendly_data
+                versioned_data = regdata.field_data.versioned_data
+                unversioned_data = regdata.field_data.field.data
+            
+                if regdata.field_data.field.input_type == 'accommodation' and friendly_data:
+                    billable_choices = [x for x in versioned_data['choices'] if x['id'] in regdata.data['choice'] and x['is_billable']]
+                    if billable_choices:
+                        if not friendly_data['is_no_accommodation']:
+                            choice = {
+                                      'title': '{} - {}'.format(section.title, friendly_data['choice']),
+                                      'price': format_currency(billable_choices[0]['price'], '', u'#0.00', locale='en_US'),
+                                      'quantity': friendly_data['nights'],
+                                      'price_info': billable_choices[0]['price_info'] 
+                                     }
+                            itemized_data.append(choice)
+
+                elif regdata.field_data.field.input_type == 'single_choice':
+                    billable_choices = [x for x in versioned_data['choices'] if x['id'] in regdata.data and x['is_billable']]
+                    if billable_choices:
+                        choice = {
+                                  'title': '{} - {}'.format(field.title, unversioned_data['captions'][billable_choices[0]['id']]), 
+                                  'price': format_currency(billable_choices[0]['price'], '', u'#0.00', locale='en_US'), 
+                                  'quantity': regdata.data[billable_choices[0]['id']],
+                                  'price_info': billable_choices[0]['price_info']
+                                 }
+                        itemized_data.append(choice)
+                 
+                elif regdata.field_data.field.input_type == 'multi_choice':
+                    billable_choices = [x for x in versioned_data['choices'] if x['id'] in regdata.data and x['is_billable']]
+                    if billable_choices:
+                        for bc in billable_choices:  
+                            choice = {
+                                      'title': '{} - {}'.format(field.title, unversioned_data['captions'][bc['id']]),
+                                      'price': format_currency(bc['price'], '', u'#0.00', locale='en_US'),
+                                      'quantity': regdata.data[bc['id']],
+                                      'price_info': bc['price_info']
+                                     }
+                            itemized_data.append(choice)
+
+                else: 
+                    if regdata.price: 
+                        choice = {
+                                  'title': '{} - {}'.format(section.title, field.title),
+                                  'price': format_currency(versioned_data['price'], '', u'#0.00', locale='en_US'),
+                                  'quantity': regdata.data if regdata.field_data.field.input_type == 'number' else 1,
+                                  'price_info': versioned_data['price_info']
+                                 }
+                        itemized_data.append(choice)
+
+        data['itemized_data'] = itemized_data
