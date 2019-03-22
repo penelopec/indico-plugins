@@ -22,13 +22,14 @@ from indico.util.i18n import make_bound_gettext
 
 _ = make_bound_gettext('livesync')
 __all__ = ('LiveSyncPluginBase', 'LiveSyncBackendBase', 'AgentForm', 'SimpleChange', 'process_records',
-           'MARCXMLGenerator', 'Uploader', 'MARCXMLUploader')
+           'MARCXMLGenerator', 'JSONGenerator', 'Uploader', 'MARCXMLUploader', 'JSONUploader')
 
 from .base import LiveSyncPluginBase, LiveSyncBackendBase  # isort:skip
 from .forms import AgentForm  # isort:skip
 from .simplify import SimpleChange, process_records  # isort:skip
 from .marcxml import MARCXMLGenerator  # isort:skip
-from .uploader import Uploader, MARCXMLUploader  # isort:skip
+from .elasticjson import JSONGenerator
+from .uploader import Uploader, MARCXMLUploader, JSONUploader  # isort:skip
 
 
 @signals.import_tasks.connect
