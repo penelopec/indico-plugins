@@ -102,8 +102,7 @@ class JSONUploader(Uploader):
     def upload_records(self, records, from_queue):
         json = JSONGenerator.records_to_json(records) if from_queue else JSONGenerator.objects_to_json(records)
         if json is not None:
-            for t in json:
-                self.upload_json(t['records'], t['type'])
+            self.upload_json(t['records'])
 
     def upload_json(self, json, type):
         """Receives JSON strings to be uploaded"""
