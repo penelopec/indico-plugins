@@ -1,0 +1,5 @@
+graft indico_search_elastic/static
+graft indico_search_elastic/templates
+graft indico_search_elastic/translations
+
+global-exclude *.pyc __pycache__ .keep
