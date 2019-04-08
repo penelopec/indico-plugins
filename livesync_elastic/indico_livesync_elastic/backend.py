@@ -37,12 +37,8 @@ class ElasticUploader(JSONUploader):
         self.username = self.backend.agent.settings.get('username')
         self.password = self.backend.agent.settings.get('password')
 
-    def upload_json(self, dataList, dataType):
-        #jsonStr = json.dumps([d for d in dataList]).encode('utf-8')
-        #jsonStr = json.dumps(dataList)
-        #response = requests.post(self.url, auth=(self.username, self.password), params={'type': dataType}, data={'json': jsonStr})
-
-        response = requests.post(self.url, auth=(self.username, self.password), params={'type': dataType}, json=dataList)
+    def upload_json(self, dataList):
+        response = requests.post(self.url, auth=(self.username, self.password), json=dataList)
         result_text = self._get_result_text(response.content)
 
         if response.status_code != 200 or result_text != 'true':
