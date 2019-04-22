@@ -17,14 +17,9 @@
 from __future__ import unicode_literals
 
 from marshmallow import Schema, ValidationError, fields, post_dump, validate, validates_schema
-from marshmallow.fields import Boolean, Function, Nested, Integer, String, Method
-from marshmallow_enum import EnumField
-from marshmallow_sqlalchemy import column2field, property2field
-
-from tika import parser
+from marshmallow.fields import Nested, String, Method
 
 from indico.core.marshmallow import mm
-from indico.modules.categories.models.categories import Category
 from indico.modules.events.models.events import Event
 from indico.modules.events.contributions.models.contributions import Contribution
 from indico.modules.events.contributions.models.subcontributions import SubContribution
@@ -32,48 +27,12 @@ from indico.modules.events.notes.models.notes import EventNote, EventNoteRevisio
 from indico.modules.attachments.models.attachments import Attachment, AttachmentFile
 from indico.modules.attachments.models.folders import AttachmentFolder
 
-from indico.modules.groups.models.groups import LocalGroup
-from indico.modules.users.schemas import UserSchema
-
-
-class CategorySchema(mm.ModelSchema):
-    category_path = List(String(), attribute='Category.chain_titles')
-
-    class Meta:
-        model = Category
-        fields = ('id', 'category_path')
-
-
-class EventPersonLinkSchema(mm.ModelSchema):
-    class Meta:
-        model = EventPersonLink
-        fields = ('id', 'event_id', 'person_id', 'last_name', 'first_name', 'title', 'affiliation', 'address', 'phone')
-
-
-class ContributionPersonLinkSchema(mm.ModelSchema):
-    role = String(attribute='contribution.person_links.author_type.value')
-
-    class Meta:
-        model = ContributionPersonLink
-        fields = ('id', 'contribution_id', 'person_id', 'last_name', 'first_name', 'title', 'affiliation', 'address', 'phone',
-                  'is_speaker', 'author_type', 'diplay_order', 'role')
-
-
-class SubcontributionPersonLinkSchema(mm.ModelSchema):
-    role = String(default='Speaker')
-
-    class Meta:
-        model = SubcontributionPersonLink
-        fields = ('id', 'subcontribution_id', 'person_id', 'last_name', 'first_name', 'title', 'affiliation', 'address', 'phone', 'role')
-
 
 class EventSchema(mm.ModelSchema):
-    _access = Nested('self', attribute='Event.acl_entries', many=True)
-    category_path = Nested(CategorySchema, only=['category_path'], many=True)
-    event_type = String(attribute='event.type.capitalize()')
-    url = event.__mapper__.get_property('url')
-    property2field(url)
-    speaker_chairs = List(Nested(EventPersonLinkSchema(attribute='person_links', many=True)))
+    _access = String(default='access emails and indico groups')
+    category_path = String(default='category path chain titlees')
+    url = String(default='https://indico.domain.gov/event/id')
+    speaker_chairs = List(String())
 
     class Meta:
         model = Event
@@ -82,9 +41,10 @@ class EventSchema(mm.ModelSchema):
 
 
 class ContributionSchema(mm.Schema):
-    _access = Nested('self', attribute='Contribution.acl_entries', many=True)
-    category_path = Nested(CategorySchema, only=['category_path'], many=True)
-    list_of_persons = List(Nested(ContributionPersonLinkSchema(attribute='person_links', many=True)))
+    _access = String(default='access emails and indico groups')
+    category_path = String(default='category path chain titlees')
+    url = String(default='https://indico.domain.gov/contribution/id')
+    list_of_persons = List(String())
 
     class Meta:
         model = Contribution
@@ -93,9 +53,10 @@ class ContributionSchema(mm.Schema):
 
 
 class SubcontributionsSchema(mm.Schema):
-    _access = Nested('self', attribute='Subcontribution.acl_entries', many=True)
-    category_path = Nested(CategorySchema, only=['category_path'], many=True)
-    list_of_persons = List(Nested(SubcontributionPersonLinkSchema(attribute='person_links', many=True)))
+    _access = String(default='access emails and indico groups')
+    category_path = String(default='category path chain titlees')
+    url = String(default='https://indico.domain.gov/subcontribution/id')
+    list_of_persons = List(String())
 
     class Meta:
         model = Subcontribution
@@ -117,7 +78,7 @@ class AttachmentFileSchema(mm.Schema):
     content = Method('get_attachment_content', dump_only=True)
 
     def get_attachment_content(self, AttachmentFile):
-        parsedFile = parser.from_file(AttachmentFile.filename)
+        parsedFile = 'File content using tika function: parser.from_file(AttachmentFile.filename)'
         return parsedFile
 
     class Meta:
@@ -126,15 +87,14 @@ class AttachmentFileSchema(mm.Schema):
 
 
 class AttachmentSchema(mm.Schema):
-    _access = Nested('self', attribute='Attachment.acl_entries', many=True)
-    category_path = Nested(CategorySchema, only=['category_path'], many=True)
-    filename = String(Nested(AttachmentFileSchema, only=['filename']) )
-    content = String(Nested(AttachmentFileSchema, only=['content']) )
-    event_id = Integer(Nested(AttachmentFolderSchema, only=['event_id']))
-    contribution_id = Integer(Nested(AttachmentFolderSchema, only=['contribution_id']))
-    subcontribution_id = Integer(Nested(AttachmentFolderSchema, only=['subcontribution_id']))
-
-    url = String(attribute='Attachment.absolute_download_url')
+    _access = String(default='access emails and indico groups')
+    category_path = String(default='category path chain titlees')
+    url = String(default='https://indico.domain.gov/attachement/id')    
+    filename = Nested(AttachmentFileSchema, only=('filename'))
+    content = Nested(AttachmentFileSchema, only=('content'))
+    event_id = Nested(AttachmentFolderSchema, only=('event_id'))
+    contribution_id = Nested(AttachmentFolderSchema, only=('contribution_id'))
+    subcontribution_id = Nested(AttachmentFolderSchema, only=('subcontribution_id'))
 
     class Meta:
         model = Attachment
@@ -143,9 +103,10 @@ class AttachmentSchema(mm.Schema):
 
 
 class NotesSchema(mm.Schema):
-    _access = Nested('self', attribute='Notes.acl_entries', many=True)
-    category_path = Nested(CategorySchema, only=['category_path'], many=True)
-    content = String(attribute='EventNoteRevision.source')
+    _access = String(default='access emails and indico groups')
+    category_path = String(default='category path chain titlees')
+    url = String(default='https://indico.domain.gov/attachement/id')
+    content = String('Notes text content')
 
     class Meta:
         model = EventNoteRevision
