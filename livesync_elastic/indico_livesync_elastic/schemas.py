@@ -102,7 +102,7 @@ class AttachmentSchema(mm.Schema):
                   'creation_date', 'filename', 'content')
 
 
-class NotesSchema(mm.Schema):
+class NoteSchema(mm.Schema):
     _access = String(default='access emails and indico groups')
     category_path = String(default='category path chain titlees')
     url = String(default='https://indico.domain.gov/attachement/id')
@@ -118,4 +118,4 @@ event_schema = EventSchema()
 contribution_schema = ContributionSchema()
 subcontribution_schema = SubcontributionSchema()
 attachment_schema = AttachmentSchema()
-notes_schema = NotesSchema()
+note_schema = NotesSchema()
