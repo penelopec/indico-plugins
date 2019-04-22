@@ -15,8 +15,8 @@ from wtforms.validators import URL, DataRequired
 
 from indico.web.forms.fields import IndicoPasswordField
 
-from indico_livesync import AgentForm, LiveSyncBackendBase, MARCXMLUploader
-from indico_livesync_elastic import _
+from indico_livesync import AgentForm, LiveSyncBackendBase
+from indico_livesync_elastic import JSONUploader, _
 
 
 class ElasticAgentForm(AgentForm):
