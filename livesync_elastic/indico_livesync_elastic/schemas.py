@@ -114,6 +114,25 @@ class NoteSchema(mm.Schema):
                   'creation_date', 'content')
 
 
+class ElasticItemSchema(Schema):
+    _index = String(default='indico')
+    _type = String(default='events')
+    _id = Integer()
+
+
+class ElasticActionSchema(Schema):
+    index = Nested(ElasticItemSchema(), default=None)
+    update = Nested(ElasticItemSchema(), default=None)
+    delete = Nested(ElasticItemSchema(), default=None)
+    
+    @post_dump
+    def clean_missing(self, data):
+        for key in filter(lambda key: data[key] is None, data):
+            data.pop(key)
+        return data    
+
+
+elastic_schema = ElasticActionSchema()
 event_schema = EventSchema()
 contribution_schema = ContributionSchema()
 subcontribution_schema = SubcontributionSchema()
