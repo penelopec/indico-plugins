@@ -20,6 +20,7 @@ from indico.core.db import db
 from indico.util.struct.iterables import grouper
 
 from indico_livesync import MARCXMLGenerator, process_records
+from indico_livesync_elastic import JSONGenerator
 
 
 class Uploader(object):
@@ -96,14 +97,15 @@ class MARCXMLUploader(Uploader):
 
     def upload_xml(self, xml):
         """Receives MARCXML strings to be uploaded"""
-        raise NotImplementedError  # pragma: no cove
+        raise NotImplementedError  # pragma: no cover
+
 
 class JSONUploader(Uploader):
     def upload_records(self, records, from_queue):
-        json = JSONGenerator.records_to_json(records) if from_queue else JSONGenerator.objects_to_json(records)
-        if json is not None:
-            self.upload_json(records)
+        jsonData = JSONGenerator.records_to_json(records) if from_queue else JSONGenerator.objects_to_json(records)
+        if jsonData is not None:
+            self.upload_json(jsonData)
 
-    def upload_json(self, json, type):
+    def upload_json(self, jsonData):
         """Receives JSON strings to be uploaded"""
         raise NotImplementedError  # pragma: no cover
