@@ -119,11 +119,16 @@ class ElasticItemSchema(Schema):
     _type = String(default='events')
     _id = Integer()
 
+    class Meta:
+        fields = ('_index', '_type', '_id')
+
 
 class ElasticActionSchema(Schema):
     index = Nested(ElasticItemSchema(), default=None)
-    update = Nested(ElasticItemSchema(), default=None)
     delete = Nested(ElasticItemSchema(), default=None)
+
+    class Meta:
+        fields = ('index', 'delete')
     
     @post_dump
     def clean_missing(self, data):
