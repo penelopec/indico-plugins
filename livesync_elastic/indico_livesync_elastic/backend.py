@@ -15,13 +15,14 @@ from wtforms.validators import URL, DataRequired
 
 from indico.web.forms.fields import IndicoPasswordField
 
-from indico_livesync import AgentForm, LiveSyncBackendBase
-from indico_livesync_elastic import JSONUploader, _
+from indico_livesync import AgentForm, LiveSyncBackendBase, JSONUploader
+from indico_livesync_elastic import _
 
 
 class ElasticAgentForm(AgentForm):
     server_url = URLField(_('URL'), [DataRequired(), URL(require_tld=False)],
                           description=_("The URL of Elasticsearch's import endpoint"))
+    esIndex_name = StringField(_('Repository'), [DataRequired()])
     username = StringField(_('Username'), [DataRequired()])
     password = IndicoPasswordField(_('Password'), [DataRequired()], toggle=True)
 
@@ -34,11 +35,12 @@ class ElasticUploader(JSONUploader):
     def __init__(self, *args, **kwargs):
         super(ElasticUploader, self).__init__(*args, **kwargs)
         self.url = self.backend.agent.settings.get('server_url')
+        self.repository = self.backend.agent.settings.get('esIndex_name')
         self.username = self.backend.agent.settings.get('username')
         self.password = self.backend.agent.settings.get('password')
 
-    def upload_json(self, dataList):
-        response = requests.post(self.url, auth=(self.username, self.password), json=dataList)
+    def upload_json(self, jsonData):
+        response = requests.post(self.url, auth=(self.username, self.password), data={'json': jsonData})
         result_text = self._get_result_text(response.content)
 
         if response.status_code != 200 or result_text != 'true':
