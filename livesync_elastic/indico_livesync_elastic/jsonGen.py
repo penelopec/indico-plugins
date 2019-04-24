@@ -27,7 +27,7 @@ from indico.modules.events.models.events import Event
 
 from indico_livesync import SimpleChange
 from indico_livesync.util import compound_id, obj_ref
-from indico_livesync_elastic import event_schema, contribution_schema, subcontribution_schema, attachment_schema, note_schema. elastic_schema
+from indico_livesync_elastic import event_schema, contribution_schema, subcontribution_schema, attachment_schema, note_schema, elastic_schema
 
 
 class JSONGenerator:
@@ -52,6 +52,9 @@ class JSONGenerator:
         self.closed = False
         self.esIndex = ElasticLiveSyncPlugin.settings.get('esIndex_name')
         self.jsonData = ''
+
+    def get_json():
+        return self.jsonData
 
     def safe_add_object(self, obj, deleted=False):
         try:
