@@ -17,7 +17,9 @@ from indico_livesync_elastic import _
 
 
 class SettingsForm(IndicoForm):
+    esIndex_name = StringField(_("Repository"), validators=[DataRequired()],
+                           description=_("The Elasticsearch top index name"))
     username = StringField(_("Username"), validators=[DataRequired()],
-                           description=_("The username to access the category ID/title mapping"))
+                           description=_("The username to access the Elasticsearch index mappings"))
     password = IndicoPasswordField(_('Password'), [DataRequired()], toggle=True,
-                                   description=_("The password to access the category ID/title mapping"))
+                                   description=_("The password to access the Elasticsearch index mappings"))
