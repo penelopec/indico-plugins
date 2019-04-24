@@ -53,7 +53,7 @@ class JSONGenerator:
         self.esIndex = ElasticLiveSyncPlugin.settings.get('esIndex_name')
         self.jsonData = ''
 
-    def get_json():
+    def get_json(self):
         return self.jsonData
 
     def safe_add_object(self, obj, deleted=False):
