@@ -28,7 +28,7 @@ from .base import LiveSyncPluginBase, LiveSyncBackendBase  # isort:skip
 from .forms import AgentForm  # isort:skip
 from .simplify import SimpleChange, process_records  # isort:skip
 from .marcxml import MARCXMLGenerator  # isort:skip
-from .elasticjson import JSONGenerator  # isort:skip
+from indico_livesync_elastic.jsonGen import JSONGenerator  # isort:skip
 from .uploader import Uploader, MARCXMLUploader, JSONUploader  # isort:skip
 
 
