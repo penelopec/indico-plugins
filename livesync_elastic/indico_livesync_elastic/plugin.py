@@ -21,7 +21,9 @@ class ElasticLiveSyncPlugin(LiveSyncPluginBase):
 
     configurable = True
     settings_form = SettingsForm
-    default_settings = {'username': 'elasticsearch', 'password': ''}
+    default_settings = {'esIndex_name': 'indico',
+                        'username': 'elasticsearch', 
+                        'password': ''}
     backend_classes = {'elasticsearch': ElasticLiveSyncBackend}
 
     def get_blueprints(self):
