@@ -21,7 +21,7 @@ class ElasticLiveSyncPlugin(LiveSyncPluginBase):
 
     configurable = True
     settings_form = SettingsForm
-    default_settings = {'esIndex_name': 'indico',
+    default_settings = {'repository': 'indico',
                         'username': 'elasticsearch', 
                         'password': ''}
     backend_classes = {'elasticsearch': ElasticLiveSyncBackend}
