@@ -17,7 +17,7 @@ from indico_livesync_elastic import _
 
 
 class SettingsForm(IndicoForm):
-    esIndex_name = StringField(_("Repository"), validators=[DataRequired()],
+    repository = StringField(_("Repository"), validators=[DataRequired()],
                            description=_("The Elasticsearch top index name"))
     username = StringField(_("Username"), validators=[DataRequired()],
                            description=_("The username to access the Elasticsearch index mappings"))
