@@ -51,11 +51,11 @@ class JSONGenerator(object):
     def __init__(self):
         from indico_livesync_elastic.plugin import ElasticLiveSyncPlugin
         self.closed = False
-        self.esIndex = ElasticLiveSyncPlugin.settings.get('esIndex_name')
-        self.jsonData = ''
+        self.repository = ElasticLiveSyncPlugin.settings.get('repository')
+        self.jsondata = ''
 
     def get_json(self):
-        return self.jsonData
+        return self.jsondata
 
     def safe_add_object(self, obj, deleted=False):
         try:
@@ -67,97 +67,97 @@ class JSONGenerator(object):
         if self.closed:
             raise RuntimeError('Cannot add object to closed json generator')
         if isinstance(obj, Event):
-            self.jsonData += self._event_to_json(obj, deleted)
+            self.jsondata += self._event_to_json(obj, deleted)
         elif isinstance(obj, Contribution):
-            self.jsonData += self._contrib_to_json(obj, deleted)
+            self.jsondata += self._contrib_to_json(obj, deleted)
         elif isinstance(obj, SubContribution):
-            self.jsonData += self._subcontrib_to_json(obj, deleted)
+            self.jsondata += self._subcontrib_to_json(obj, deleted)
         elif isinstance(obj, Attachment):
-            self.jsonData += self._attachment_to_json(obj, deleted)
+            self.jsondata += self._attachment_to_json(obj, deleted)
         elif isinstance(obj, EventNote):
-            self.jsonData += self._note_to_json(obj, deleted)
+            self.jsondata += self._note_to_json(obj, deleted)
         elif isinstance(obj, Category):
             pass  # we don't send category updates
         else:
             raise ValueError('unknown object ref: {}'.format(obj))
-        return self.jsonData
+        return self.jsondata
 
     def _event_to_json(self, obj, deleted):
         js = '\n'
-        esMapping = dict(_index=self.esIndex, _type='events', _id=obj.id)
+        mapping = dict(_index=self.repository, _type='events', _id=obj.id)
         if (deleted):
-            esAction = dict(delete=esMapping)
-            rs = elastic_schema.dumps(esAction)
-            js += rs.data
+            operation = dict(delete=mapping)
+            es = elastic_schema.dumps(operation)
+            js += es.data
         else:
-            esAction = dict(index=esMapping)
-            rs = elastic_schema.dumps(esAction)
-            js += rs.data
+            operation = dict(index=mapping)
+            es = elastic_schema.dumps(operation)
+            js += es.data
             js += '\n'
-            rsObj = event_schema.dumps(obj)
-            js += rsObj.data
+            esobj = event_schema.dumps(obj)
+            js += esobj.data
         return js
 
     def _contrib_to_json(self, obj, deleted):
         js = '\n'
-        esMapping = dict(_index=self.esIndex, _type='contributions', _id=obj.id)
+        mapping = dict(_index=self.repository, _type='contributions', _id=obj.id)
         if (deleted):
-            esAction = dict(delete=esMapping)
-            rs = elastic_schema.dumps(esAction)
-            js += rs.data
+            operation = dict(delete=mapping)
+            es = elastic_schema.dumps(operation)
+            js += es.data
         else:
-            esAction = dict(index=esMapping)
-            rs = elastic_schema.dumps(esAction)
-            js += rs.data
+            operation = dict(index=mapping)
+            es = elastic_schema.dumps(operation)
+            js += es.data
             js += '\n'
-            rsObj = contribution_schema.dumps(obj)
-            js += rsObj.data
+            esobj = contribution_schema.dumps(obj)
+            js += esobj.data
         return js
 
     def _subcontrib_to_json(self, obj, deleted):
         js = '\n'
-        esMapping = dict(_index=self.esIndex, _type='subcontributions', _id=obj.id)
+        mapping = dict(_index=self.repository, _type='subcontributions', _id=obj.id)
         if (deleted):
-            esAction = dict(delete=esMapping)
-            rs = elastic_schema.dumps(esAction)
-            js += rs.data
+            operation = dict(delete=mapping)
+            es = elastic_schema.dumps(operation)
+            js += es.data
         else:
-            esAction = dict(index=esMapping)
-            rs = elastic_schema.dumps(esAction)
-            js += rs.data
+            operation = dict(index=mapping)
+            es = elastic_schema.dumps(operation)
+            js += es.data
             js += '\n'
-            rsObj = subcontribution_schema.dumps(obj)
-            js += rsObj.data
+            esobj = subcontribution_schema.dumps(obj)
+            js += esobj.data
         return js
 
     def _attachment_to_json(self, obj, deleted):
         js = '\n'
-        esMapping = dict(_index=self.esIndex, _type='attachments', _id=obj.id)
+        mapping = dict(_index=self.repository, _type='attachments', _id=obj.id)
         if (deleted):
-            esAction = dict(delete=esMapping)
-            rs = elastic_schema.dumps(esAction)
-            js += rs.data
+            operation = dict(delete=mapping)
+            es = elastic_schema.dumps(operation)
+            js += es.data
         else:
-            esAction = dict(index=esMapping)
-            rs = elastic_schema.dumps(esAction)
-            js += rs.data
+            operation = dict(index=mapping)
+            es = elastic_schema.dumps(operation)
+            js += es.data
             js += '\n'
-            rsObj = attachment_schema.dumps(obj)
-            js += rsObj.data
+            esobj = attachment_schema.dumps(obj)
+            js += esobj.data
         return js
 
     def _note_to_json(self, obj, deleted):
         js = '\n'
-        esMapping = dict(_index=self.esIndex, _type='notes', _id=obj.id)
+        mapping = dict(_index=self.repository, _type='notes', _id=obj.id)
         if (deleted):
-            esAction = dict(delete=esMapping)
-            rs = elastic_schema.dumps(esAction)
-            js += rs.data
+            operation = dict(delete=mapping)
+            es = elastic_schema.dumps(operation)
+            js += es.data
         else:
-            esAction = dict(index=esMapping)
-            rs = elastic_schema.dumps(esAction)
-            js += rs.data
+            operation = dict(index=mapping)
+            es = elastic_schema.dumps(operation)
+            js += es.data
             js += '\n'
-            rsObj = note_schema.dumps(obj)
-            js += rsObj.data
+            esobj = note_schema.dumps(obj)
+            js += esobj.data
         return js
