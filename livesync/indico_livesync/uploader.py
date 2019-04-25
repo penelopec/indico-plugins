@@ -20,7 +20,7 @@ from indico.core.db import db
 from indico.util.struct.iterables import grouper
 
 from indico_livesync import MARCXMLGenerator, process_records
-from indico_livesync_elastic import JSONGenerator
+from indico_livesync_elastic.jsonGen import JSONGenerator
 
 
 class Uploader(object):
