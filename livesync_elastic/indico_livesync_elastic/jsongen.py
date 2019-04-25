@@ -31,7 +31,7 @@ from indico_livesync_elastic.schemas import event_schema, contribution_schema, s
                                             attachment_schema, note_schema, elastic_schema
 
 
-class JSONGenerator:
+class JSONGenerator(object):
     """Generate JSON for Elasticsearch based on Indico objects."""
 
     @classmethod
