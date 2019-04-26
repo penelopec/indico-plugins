@@ -16,6 +16,8 @@
 
 from __future__ import unicode_literals
 
+import json
+
 from flask_pluginengine import current_plugin
 
 from indico.modules.categories.models.categories import Category
@@ -28,7 +30,7 @@ from indico.modules.events.models.events import Event
 from indico_livesync import SimpleChange
 from indico_livesync.util import compound_id, obj_ref
 from indico_livesync_elastic.schemas import event_schema, contribution_schema, subcontribution_schema
-from indico_livesync_elastic.schemas import attachment_schema, note_schema, elastic_schema_index, elastic_schema_delete
+from indico_livesync_elastic.schemas import attachment_schema, note_schema
 
 
 class JSONGenerator(object):
@@ -87,12 +89,10 @@ class JSONGenerator(object):
         mapping = dict(_index=self.repository, _type='events', _id=obj.id)
         if (deleted):
             operation = dict(delete=mapping)
-            es = elastic_schema_delete.dumps(operation)
-            js += es.data
+            js += json.dumps(operation)
         else:
             operation = dict(index=mapping)
-            es = elastic_schema_index.dumps(operation)
-            js += es.data
+            js += json.dumps(operation)
             js += '\n'
             esobj = event_schema.dumps(obj)
             js += esobj.data
@@ -103,12 +103,10 @@ class JSONGenerator(object):
         mapping = dict(_index=self.repository, _type='contributions', _id=obj.id)
         if (deleted):
             operation = dict(delete=mapping)
-            es = elastic_schema_delete.dumps(operation)
-            js += es.data
+            js += json.dumps(operation)
         else:
             operation = dict(index=mapping)
-            es = elastic_schema_index.dumps(operation)
-            js += es.data
+            js += json.dumps(operation)
             js += '\n'
             esobj = contribution_schema.dumps(obj)
             js += esobj.data
@@ -119,12 +117,10 @@ class JSONGenerator(object):
         mapping = dict(_index=self.repository, _type='subcontributions', _id=obj.id)
         if (deleted):
             operation = dict(delete=mapping)
-            es = elastic_schema_delete.dumps(operation)
-            js += es.data
+            js += json.dumps(operation)
         else:
             operation = dict(index=mapping)
-            es = elastic_schema_index.dumps(operation)
-            js += es.data
+            js += json.dumps(operation)
             js += '\n'
             esobj = subcontribution_schema.dumps(obj)
             js += esobj.data
@@ -135,12 +131,10 @@ class JSONGenerator(object):
         mapping = dict(_index=self.repository, _type='attachments', _id=obj.id)
         if (deleted):
             operation = dict(delete=mapping)
-            es = elastic_schema_delete.dumps(operation)
-            js += es.data
+            js += json.dumps(operation)
         else:
             operation = dict(index=mapping)
-            es = elastic_schema_index.dumps(operation)
-            js += es.data
+            js += json.dumps(operation)
             js += '\n'
             esobj = attachment_schema.dumps(obj)
             js += esobj.data
@@ -151,12 +145,10 @@ class JSONGenerator(object):
         mapping = dict(_index=self.repository, _type='notes', _id=obj.id)
         if (deleted):
             operation = dict(delete=mapping)
-            es = elastic_schema_delete.dumps(operation)
-            js += es.data
+            js += json.dumps(operation)
         else:
             operation = dict(index=mapping)
-            es = elastic_schema_index.dumps(operation)
-            js += es.data
+            js += json.dumps(operation)
             js += '\n'
             esobj = note_schema.dumps(obj)
             js += esobj.data
