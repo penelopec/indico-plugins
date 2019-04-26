@@ -137,7 +137,8 @@ class ElasticActionSchema(Schema):
         return data    
 
 
-elastic_schema = ElasticActionSchema()
+elastic_schema_delete = ElasticActionSchema(only=['delete'])
+elastic_schema_index = ElasticActionSchema(only=['index'])
 event_schema = EventSchema()
 contribution_schema = ContributionSchema()
 subcontribution_schema = SubcontributionSchema()
