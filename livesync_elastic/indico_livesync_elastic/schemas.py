@@ -124,8 +124,8 @@ class ElasticItemSchema(Schema):
 
 
 class ElasticActionSchema(Schema):
-    index = Nested(ElasticItemSchema(), default=None)
-    delete = Nested(ElasticItemSchema(), default=None)
+    index = Nested(ElasticItemSchema())
+    delete = Nested(ElasticItemSchema())
 
     class Meta:
         fields = ('index', 'delete')
