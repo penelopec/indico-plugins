@@ -17,7 +17,7 @@
 from __future__ import unicode_literals
 
 from marshmallow import Schema, ValidationError, fields, post_dump, validate, validates_schema
-from marshmallow.fields import Nested, String, Method
+from marshmallow.fields import Nested, String, Method, List
 
 from indico.core.marshmallow import mm
 from indico.modules.events.models.events import Event
