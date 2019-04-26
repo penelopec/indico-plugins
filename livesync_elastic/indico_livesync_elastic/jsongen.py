@@ -28,7 +28,7 @@ from indico.modules.events.models.events import Event
 from indico_livesync import SimpleChange
 from indico_livesync.util import compound_id, obj_ref
 from indico_livesync_elastic.schemas import event_schema, contribution_schema, subcontribution_schema
-from indico_livesync_elastic.schemas import attachment_schema, note_schema, elastic_schema
+from indico_livesync_elastic.schemas import attachment_schema, note_schema, elastic_schema_index, elastic_schema_delete
 
 
 class JSONGenerator(object):
