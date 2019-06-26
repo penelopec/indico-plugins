@@ -1,3 +1,13 @@
+# copy file under:
+#   /opt/indico/.venv/lib/python2.7/site-packages/indico/web
+# to test the schema use this URLs:
+#   https://<indicoserver>/schema-test/event/<event id>/
+#   https://<indicoserver>/schema-test/attachment/<attachment id>/
+#   https://<indicoserver>/schema-test/contribution/<contribution id>/
+#   https://<indicoserver>/schema-test/subcontribution/<subcontribution id>/
+#   https://<indicoserver>/schema-test/note/<note id>/
+#
+
 from __future__ import unicode_literals
 
 import itertools
@@ -17,6 +27,7 @@ from indico.modules.events.models.events import EventType
 from indico.modules.events.models.persons import EventPersonLink
 from indico.web.flask.util import url_for
 
+import tika    # for test purposes
 from tika import parser
 
 
@@ -43,12 +54,12 @@ def _get_identifiers(principal):
         # If you want to stick with email, simply replace it with
         # 'User:{}'.format(principal.email)
         yield principal.identifier
-        yield '{}'.format(principal.email)
+        yield 'User:{}'.format(principal.email)
     elif principal.principal_type == PrincipalType.event_role:
         for user in principal.members:
             # same thing here
             yield user.identifier
-            yield '{}'.format(principal.email)
+            yield 'User:{}'.format(principal.email)
     elif principal.is_group:
         yield principal.identifier
 
@@ -128,15 +139,9 @@ def _get_eventnote_acl(eventnote):
 
 def _get_attachment_content(attachment):
     if attachment.type == AttachmentType.file:
-        # DEVELOPMENT
-        #import tika
-        #tika.initVM()
-        #parsedfile = parser.from_file(attachment.absolute_download_url)['content']
-
-        # PRODUCTION
-        from indico_livesync_json.plugin import JsonLiveSyncPlugin
-        parsedfile = parser.from_file(attachment.absolute_download_url, serverEndpoint=JsonLiveSyncPlugin.settings.get('tika_server')['content']
-        return parsedfile
+        tika.initVM()   # for test purposes
+        parsedfile = parser.from_file(attachment.absolute_download_url) #, serverEndpoint=self.tika_server)
+        return parsedfile["content"]
     else:
         return None
 
@@ -179,7 +184,7 @@ class PersonLinkSchema(mm.Schema):
 
 
 class EventSchema(mm.ModelSchema):
-    _access = mm.Function(_get_event_acl)
+    url = mm.String(attribute='external_url')
     category_path = mm.Function(_get_category_path)
     event_type = EnumField(EventType, attribute='type_')
     creation_date = mm.DateTime(attribute='created_dt')
@@ -187,73 +192,120 @@ class EventSchema(mm.ModelSchema):
     end_date = mm.DateTime(attribute='end_dt')
     location = mm.Function(_get_location)
     speakers_chairs = mm.Nested(PersonLinkSchema, attribute='person_links', many=True)
-    url = mm.String(attribute='external_url')
+    _access = mm.Function(_get_event_acl)
 
     class Meta:
         model = Event
-        fields = ('_access', 'id', 'category_path', 'event_type', 'creation_date', 'start_date', 'end_date',
-                  'location', 'title', 'description', 'speakers_chairs', 'url')
+        fields = ('_access', 'category_path', 'creation_date', 'description', 'end_date', 'event_type', 'id',
+                  'location', 'speakers_chairs', 'start_date', 'title', 'url')
 
 
 class AttachmentSchema(mm.ModelSchema):
     _access = mm.Function(_get_attachment_acl)
     category_path = mm.Function(_get_category_path)
+    url = mm.String(attribute='absolute_download_url')
+    name = mm.String(attribute='title')
+    creation_date = mm.DateTime(attribute='modified_dt')
+    filename = mm.String(attribute='file.filename')
+    content = mm.String(default='Some File Content')    #Function(_get_attachment_content)
     event_id = mm.Integer(attribute='folder.event.id')
     contribution_id = mm.Function(_get_attachment_contributionid)
     subcontribution_id = mm.Function(_get_attachment_subcontributionid)
-    creation_date = mm.DateTime(attribute='modified_dt')
-    filename = mm.String(attribute='file.filename')
-    content = mm.Function(_get_attachment_content)
-    url = mm.String(attribute='absolute_download_url')
+
 
     class Meta:
         model = Event
-        fields = ('_access', 'id', 'category_path', 'event_id', 'contribution_id', 'subcontribution_id',
-                  'creation_date', 'filename', 'content', 'url')
+        fields = ('_access', 'id', 'category_path', 'event_id', 'contribution_id', 'subcontribution_id', 'url',
+                  'creation_date', 'filename', 'content')
 
 
 class ContributionSchema(mm.ModelSchema):
-    _access = mm.Function(_get_obj_acl)
+    url = mm.Function(_get_contribution_url)
     category_path = mm.Function(_get_category_path)
     event_id = mm.Integer(attribute='event_id')
+    creation_date = mm.DateTime(attribute='created_dt')
     start_date = mm.DateTime(attribute='start_dt')
     end_date = mm.DateTime(attribute='end_dt')
     location = mm.Function(_get_location)
     list_of_persons = mm.Nested(PersonLinkSchema, attribute='person_links', many=True)
-    url = mm.Function(_get_contribution_url)
+    _access = mm.Function(_get_obj_acl)
 
     class Meta:
         model = Event
-        fields = ('_access', 'id', 'category_path', 'event_id', 'creation_date', 'start_date', 'end_date', 'location',
-                  'title', 'description', 'list_of_persons', 'url')
+        fields = ('_access', 'category_path', 'creation_date', 'description', 'end_date', 'id', 'location',
+                  'event_id', 'list_of_persons', 'start_date', 'title', 'url')
 
 
 class SubContributionSchema(mm.ModelSchema):
-    _access = mm.Function(_get_subcontribution_acl)
+    url = mm.Function(_get_subcontribution_url)
     category_path = mm.Function(_get_category_path)
     event_id = mm.Integer(attribute='event.id')
     contribution_id = mm.Integer(attribute='contribution_id')
+    creation_date = mm.DateTime(attribute='created_dt')
+    start_date = mm.DateTime(attribute='start_dt')
+    end_date = mm.DateTime(attribute='end_dt')
     location = mm.Function(_get_location_subcontribution)
     list_of_persons = mm.Nested(PersonLinkSchema, attribute='person_links', many=True)
-    url = mm.Function(_get_subcontribution_url)
+    _access = mm.Function(_get_subcontribution_acl)
 
     class Meta:
         model = Event
-        fields = ('_access', 'id', 'category_path', 'event_id', 'contribution_id', 'creation_date', 'start_date',
-                  'end_date', 'location', 'title', 'description', 'list_of_persons', 'url')
+        fields = ('_access', 'category_path', 'creation_date', 'description', 'end_date', 'id', 'location',
+                  'event_id', 'contribution_id', 'list_of_persons', 'start_date', 'title', 'url')
 
 
 class EventNoteSchema(mm.ModelSchema):
-    _access = mm.Function(_get_eventnote_acl)
+    url = mm.Function(_get_eventnote_url)
     category_path = mm.Function(_get_category_path)
     event_id = mm.Integer(attribute='event_id')
     contribution_id = mm.Function(_get_eventnote_contributionid)
     subcontribution_id = mm.Integer(attribute='subcontribution_id')
     creation_date = mm.DateTime(attribute='current_revision.created_dt')
     content = mm.String(attribute='html')
-    url = mm.Function(_get_eventnote_url)
+    _access = mm.Function(_get_eventnote_acl)
 
     class Meta:
         model = Event
-        fields = ('_access', 'id', 'category_path', 'event_id', 'contribution_id', 'subcontribution_id', 
-                  'creation_date', 'content', 'url')
+        fields = ('_access', 'category_path', 'creation_date', 'id', 'event_id', 'contribution_id',
+                  'subcontribution_id', 'content', 'url')
+
+
+
+# If you want to test this quickly, keep the code below and the file as indico/web/blueprint.py
+# and go to https://yourinstance/schema-test/event/EVENTID
+
+from indico.web.flask.wrappers import IndicoBlueprint
+import json
+bp = IndicoBlueprint('test', __name__)
+
+@bp.route('/schema-test/event/<int:event_id>/')
+def event_test(event_id):
+    event = Event.get_one(event_id)
+    response = EventSchema().jsonify(event)
+    data = response.get_json()
+
+    test = 'This is the URL and rest for ES events.json'
+    data['$schema'] = test
+    response.data = json.dumps(data)
+    return response     #(EventSchema().jsonify(event)).append({'$schema':test})
+
+@bp.route('/schema-test/attachment/<int:attachment_id>/')
+def attachment_test(attachment_id):
+    attachment = Attachment.get_one(attachment_id)
+    return AttachmentSchema().jsonify(attachment)
+
+@bp.route('/schema-test/contribution/<int:contribution_id>/')
+def contribution_test(contribution_id):
+    contribution = Contribution.get_one(contribution_id)
+    return ContributionSchema().jsonify(contribution)
+
+@bp.route('/schema-test/subcontribution/<int:subcontribution_id>/')
+def subcontribution_test(subcontribution_id):
+    subcontribution = SubContribution.get_one(subcontribution_id)
+    return SubContributionSchema().jsonify(subcontribution)
+
+@bp.route('/schema-test/note/<int:note_id>/')
+def note_test(note_id):
+    note = EventNote.get_one(note_id)
+    return EventNoteSchema().jsonify(note)
+

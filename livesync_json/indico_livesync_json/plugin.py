@@ -8,9 +8,9 @@
 from __future__ import unicode_literals
 
 from indico_livesync import LiveSyncPluginBase
-from indico_livesync_json.backend import JsonLiveSyncBackend
+from indico_livesync_json.backend import JsonLiveSyncBackend, JsonAgentForm
 from indico_livesync_json.blueprint import blueprint
-from indico_livesync_json.forms import SettingsForm
+#from indico_livesync_json.forms import SettingsForm
 
 
 class JsonLiveSyncPlugin(LiveSyncPluginBase):
@@ -20,10 +20,18 @@ class JsonLiveSyncPlugin(LiveSyncPluginBase):
     """
 
     configurable = True
-    settings_form = SettingsForm
-    default_settings = {'search_repository': 'indico',
+    settings_form = JsonAgentForm
+    default_settings = {'search_app': '',
                         'username': '', 
-                        'password': ''}
+                        'password': '',
+                        'tika_server': '',
+                        'es_server': '',
+                        'es_events': '',
+                        'es_contributions': '',
+                        'es_subcontributions': '',
+                        'es_attachments': '',
+                        'es_notes': ''
+                        }
     backend_classes = {'jsonsearch': JsonLiveSyncBackend}
 
     def get_blueprints(self):

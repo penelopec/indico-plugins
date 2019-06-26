@@ -39,15 +39,15 @@ class JsonAgentForm(AgentForm):
                           description=_("URL <url:port> of tika server to parse file content"))
     es_server = URLField(_('Elasticsearch URL'), [DataRequired(), URL(require_tld=False)],
                           description=_("URL <http://<host:port>/schemas/instance/> of Elasticsearch endpoint"))
-    events = IndicoPasswordField(_('Elasticsearch Events JSON Schema'), [DataRequired()], toggle=True,
+    es_events = StringField(_('Elasticsearch Events JSON Schema'), [DataRequired()],
                           description=_("<events_vn.n.n.json>: the JSON Schema for the events Elasticsearch index"))
-    contributions = IndicoPasswordField(_('Elasticsearch Contributions JSON Schema'), [DataRequired()], toggle=True,
+    es_contributions = StringField(_('Elasticsearch Contributions JSON Schema'), [DataRequired()],
                           description=_("<contributions_vn.n.n.json>: the JSON Schema for the contributions Elasticsearch index"))
-    subcontributions = IndicoPasswordField(_('Elasticsearch SubContributions JSON Schema'), [DataRequired()], toggle=True,
+    es_subcontributions = StringField(_('Elasticsearch SubContributions JSON Schema'), [DataRequired()],
                           description=_("<subcontributions_vn.n.n.json>: the JSON Schema for the subcontributions Elasticsearch index"))
-    attachments = IndicoPasswordField(_('Elasticsearch Attachments JSON Schema'), [DataRequired()], toggle=True,
+    es_attachments = StringField(_('Elasticsearch Attachments JSON Schema'), [DataRequired()],
                           description=_("<attachments_vn.n.n.json>: the JSON Schema for the attachments Elasticsearch index"))
-    notes = IndicoPasswordField(_('Elasticsearch Notes JSON Schema'), [DataRequired()], toggle=True,
+    es_notes = StringField(_('Elasticsearch Notes JSON Schema'), [DataRequired()],
                           description=_("<notes_vn.n.n.json>: the JSON Schema for the notes Elasticsearch index"))
 
 
@@ -81,11 +81,11 @@ class json_uploader(Uploader):
         
         self.tika_server = self.backend.agent.settings.get('tika_server')
         es_server = self.backend.agent.settings.get('es_server').rstrip('/')
-        self.events = '$schema:{0}/{1}'.format(es_server, self.backend.agent.settings.get('events'))
-        self.contributions = '$schema:{0}/{1}'.format(es_server, self.backend.agent.settings.get('contributions'))
-        self.subcontributions = '$schema:{0}/{1}'.format(es_server, self.backend.agent.settings.get('subcontributions'))
-        self.attachments = '$schema:{0}/{1}'.format(es_server, self.backend.agent.settings.get('attachments'))
-        self.notes = '$schema:{0}/{1}'.format(es_server, self.backend.agent.settings.get('notes'))
+        self.es_events = '$schema:{}/{}'.format(es_server, self.backend.agent.settings.get('es_events'))
+        self.es_contributions = '$schema:{}/{}'.format(es_server, self.backend.agent.settings.get('es_contributions'))
+        self.es_subcontributions = '$schema:{}/{}'.format(es_server, self.backend.agent.settings.get('es_subcontributions'))
+        self.es_attachments = '$schema:{}/{}'.format(es_server, self.backend.agent.settings.get('es_attachments'))
+        self.es_notes = '$schema:{}/{}'.format(es_server, self.backend.agent.settings.get('es_notes'))
 
 
     def upload_records(self, records, from_queue):
@@ -102,15 +102,15 @@ class json_uploader(Uploader):
 
     def get_jsondata(self, obj):
         if isinstance(obj, Event):
-            return self.add_schema(EventSchema().jsonify(obj), self.events)
+            return self.add_schema(EventSchema().jsonify(obj), self.es_events)
         elif isinstance(obj, Contribution):
-            return  self.add_schema(ContributionSchema().jsonify(obj), self.contributions)
+            return  self.add_schema(ContributionSchema().jsonify(obj), self.es_contributions)
         elif isinstance(obj, SubContribution):
-            return  self.add_schema(SubContributionSchema().jsonify(obj), self.subcontributions)
+            return  self.add_schema(SubContributionSchema().jsonify(obj), self.es_subcontributions)
         elif isinstance(obj, Attachment):
-            return  self.add_schema(AttachmentSchema().jsonify(obj), self.attachments)
+            return  self.add_schema(AttachmentSchema().jsonify(obj), self.es_attachments)
         elif isinstance(obj, EventNote):
-            return  self.add_schema(EventNoteSchema().jsonify(obj), self.notes)
+            return  self.add_schema(EventNoteSchema().jsonify(obj), self.es_notes)
         elif isinstance(obj, Category):
             return None
         else:
@@ -123,20 +123,20 @@ class json_uploader(Uploader):
         return response
 
     def upload_jsondata(self, jsondata, change_type, id):
-        DEBUG = True
-        if DEBUG:
+        TEST = True
+        if TEST:
             f = open('/opt/indico/log/livesync.log', 'w') 
-            f.write('Type = {0} - object ID = {1} - json = \n{2}\n\n'.format(change_type, id, jsondata))
+            f.write('Type = {} - object ID = {} - json = \n{}\n\n'.format(change_type, id, jsondata))
             f.close()
         else:
             if change_type == SimpleChange.created:
                 response = requests.post(self.search_url, auth=(self.username, self.password), 
                                          json=jsondata, headers=self.headers)
             elif change_type == SimpleChange.updated:
-                response = requests.put('{0}{1}'.format(self.search_url, id), auth=(self.username, self.password), 
+                response = requests.put('{}{}'.format(self.search_url, id), auth=(self.username, self.password), 
                                         json=jsondata, headers=self.headers)
             elif change_type == SimpleChange.deleted:
-                response = requests.delete('{0}{1}'.format(self.search_url, id), auth=(self.username, self.password), 
+                response = requests.delete('{}{}'.format(self.search_url, id), auth=(self.username, self.password), 
                                            json=jsondata, headers=self.headers)
             else:
                 pass
