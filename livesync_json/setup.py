@@ -11,10 +11,10 @@ from setuptools import find_packages, setup
 
 
 setup(
-    name='indico-plugin-livesync-elastic',
+    name='indico-plugin-livesync-json',
     version='1.0',
     #url='https://github.com/indico/indico-plugins',
-    url='https://github.com/penelopec/elasticsearch/tree/master/livesync_elastic',
+    url='https://github.com/penelopec/elasticsearch/tree/master/livesync_json',
     license='MIT',
     author='Indico Team',
     author_email='indico-team@cern.ch',
@@ -26,7 +26,7 @@ setup(
         'indico-plugin-livesync>=1.0'
     ],
     entry_points={
-        'indico.plugins': {'livesync_elastic = indico_livesync_elastic.plugin:ElasticLiveSyncPlugin'}
+        'indico.plugins': {'livesync_json = indico_livesync_json.plugin:JsonLiveSyncPlugin'}
     },
     classifiers=[
         'Environment :: Plugins',

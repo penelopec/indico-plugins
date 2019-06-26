@@ -16,20 +16,17 @@ from indico.web.rh import RH
 
 
 class RHCategoriesJSON(RH):
-    """Provide category information for Elastic search"""
-
-    """ ??? Ask CERN about this
+    """Provide category information for JSON search"""
     
     def _check_access(self):
-        from indico_livesync_elastic.plugin import ElasticLiveSyncPlugin
+        from indico_livesync_json.plugin import JsonLiveSyncPlugin
         auth = request.authorization
-        username = ElasticLiveSyncPlugin.settings.get('username')
-        password = ElasticLiveSyncPlugin.settings.get('password')
+        username = JsonLiveSyncPlugin.settings.get('username')
+        password = JsonLiveSyncPlugin.settings.get('password')
         if not auth or not auth.password or auth.username != username or auth.password != password:
             response = current_app.response_class('Authorization required', 401,
-                                                  {'WWW-Authenticate': 'Basic realm="Indico - Elastic Search"'})
+                                                  {'WWW-Authenticate': 'Basic realm="Indico - JSON Search"'})
             raise Unauthorized(response=response)
-    """
 
     def _process(self):
         query = (Category.query

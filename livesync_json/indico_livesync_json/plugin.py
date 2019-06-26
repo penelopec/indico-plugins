@@ -8,23 +8,23 @@
 from __future__ import unicode_literals
 
 from indico_livesync import LiveSyncPluginBase
-from indico_livesync_elastic.backend import ElasticLiveSyncBackend
-from indico_livesync_elastic.blueprint import blueprint
-from indico_livesync_elastic.forms import SettingsForm
+from indico_livesync_json.backend import JsonLiveSyncBackend
+from indico_livesync_json.blueprint import blueprint
+from indico_livesync_json.forms import SettingsForm
 
 
-class ElasticLiveSyncPlugin(LiveSyncPluginBase):
-    """LiveSync Elastic
+class JsonLiveSyncPlugin(LiveSyncPluginBase):
+    """LiveSync JSON
 
-    Provides the Elasticsearch backend for LiveSync
+    Provides the JSON-search backend for LiveSync
     """
 
     configurable = True
     settings_form = SettingsForm
-    default_settings = {'repository': 'indico',
-                        'username': 'elasticsearch', 
+    default_settings = {'search_repository': 'indico',
+                        'username': '', 
                         'password': ''}
-    backend_classes = {'elasticsearch': ElasticLiveSyncBackend}
+    backend_classes = {'jsonsearch': JsonLiveSyncBackend}
 
     def get_blueprints(self):
         return blueprint

@@ -9,9 +9,9 @@ from __future__ import unicode_literals
 
 from indico.core.plugins import IndicoPluginBlueprint
 
-from indico_livesync_elastic.controllers import RHCategoriesJSON
+from indico_livesync_json.controllers import RHCategoriesJSON
 
 
-blueprint = IndicoPluginBlueprint('livesync_elastic', __name__)
+blueprint = IndicoPluginBlueprint('livesync_json', __name__)
 
-blueprint.add_url_rule('/livesync/elasticsearch/categories.json', 'categories_json', RHCategoriesJSON)
+blueprint.add_url_rule('/livesync/jsonsearch/categories.json', 'categories_json', RHCategoriesJSON)
