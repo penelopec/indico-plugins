@@ -40,15 +40,15 @@ class JsonAgentForm(AgentForm):
     es_server = URLField(_('Elasticsearch URL'), [DataRequired(), URL(require_tld=False)],
                           description=_("URL <http://<host:port>/schemas/instance/> of Elasticsearch endpoint"))
     es_events = StringField(_('Elasticsearch Events JSON Schema'), [DataRequired()],
-                          description=_("<events_vn.n.n.json>: the JSON Schema for the events Elasticsearch index"))
+                          description=_("<events_vn.n.n.json>: the JSON Schema for the events ES index"))
     es_contributions = StringField(_('Elasticsearch Contributions JSON Schema'), [DataRequired()],
-                          description=_("<contributions_vn.n.n.json>: the JSON Schema for the contributions Elasticsearch index"))
+                          description=_("<contributions_vn.n.n.json>: the JSON Schema for the contributions ES index"))
     es_subcontributions = StringField(_('Elasticsearch SubContributions JSON Schema'), [DataRequired()],
-                          description=_("<subcontributions_vn.n.n.json>: the JSON Schema for the subcontributions Elasticsearch index"))
+                          description=_("<subcontributions_vn.n.n.json>: the JSON Schema for the subcontributions ES index"))
     es_attachments = StringField(_('Elasticsearch Attachments JSON Schema'), [DataRequired()],
-                          description=_("<attachments_vn.n.n.json>: the JSON Schema for the attachments Elasticsearch index"))
+                          description=_("<attachments_vn.n.n.json>: the JSON Schema for the attachments ES index"))
     es_notes = StringField(_('Elasticsearch Notes JSON Schema'), [DataRequired()],
-                          description=_("<notes_vn.n.n.json>: the JSON Schema for the notes Elasticsearch index"))
+                          description=_("<notes_vn.n.n.json>: the JSON Schema for the notes ES index"))
 
 
 class json_uploaderError(Exception):
