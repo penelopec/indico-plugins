@@ -14,7 +14,7 @@ setup(
     name='indico-plugin-livesync-json',
     version='1.0',
     #url='https://github.com/indico/indico-plugins',
-    url='https://github.com/penelopec/elasticsearch/tree/master/livesync_json',
+    url='https://github.com/penelopec/indico-plugins/tree/Elasticsearch/livesync_json',
     license='MIT',
     author='Indico Team',
     author_email='indico-team@cern.ch',
