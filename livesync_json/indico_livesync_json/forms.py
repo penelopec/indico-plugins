@@ -32,7 +32,7 @@ class SettingsForm(IndicoForm):
                           description=_("<events_vn.n.n.json>: the JSON Schema for the events ES index"))
     es_contributions = StringField(_('Elasticsearch Contributions JSON Schema'), [DataRequired()],
                           description=_("<contributions_vn.n.n.json>: the JSON Schema for the contributions ES index"))
-    es_subcontributions = StringField(_('Elasticsearch SubContributions JSON Schema'), [DataRequired()],,
+    es_subcontributions = StringField(_('Elasticsearch SubContributions JSON Schema'), [DataRequired()],
                           description=_("<subcontributions_vn.n.n.json>: the JSON Schema for the subcontributions ES index"))
     es_attachments = StringField(_('Elasticsearch Attachments JSON Schema'), [DataRequired()],
                           description=_("<attachments_vn.n.n.json>: the JSON Schema for the attachments ES index"))

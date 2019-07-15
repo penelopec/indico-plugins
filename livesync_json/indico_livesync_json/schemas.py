@@ -135,7 +135,7 @@ def _get_attachment_content(attachment):
 
         # PRODUCTION
         from indico_livesync_json.plugin import JsonLiveSyncPlugin
-        parsedfile = parser.from_file(attachment.absolute_download_url, serverEndpoint=JsonLiveSyncPlugin.settings.get('tika_server')['content']
+        parsedfile = parser.from_file(attachment.absolute_download_url, serverEndpoint=JsonLiveSyncPlugin.settings.get('tika_server'))['content']
         return parsedfile
     else:
         return None
