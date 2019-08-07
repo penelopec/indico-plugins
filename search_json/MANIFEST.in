@@ -1,0 +1,6 @@
+graft indico_search_json/static
+graft indico_search_json/templates
+graft indico_search_json/translations
+
+global-exclude *.pyc __pycache__ .keep
+

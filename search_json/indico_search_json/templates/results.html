@@ -1,0 +1,63 @@
+{% extends 'search:results.html' %}
+
+{% from 'search_json:_results.html' import render_result %}
+
+{% block banner %}
+    <a href="http://invenio-software.org"><img src="{{ url_for_plugin('search_json.static', filename='images/logo.png') }}"
+                                               alt="JSON"></a>
+{% endblock %}
+
+
+{% block results %}
+
+
+    {% for r in result %}
+
+    <li>
+        {% if r.title %}
+            <a class="title" href="{{ r.url }}">{{ r.title }}</a>
+            <br>
+            Author = {{ r.author }}
+            <br>
+            <a class="url" href="{{ r.url }}">{{ r.url }}</a>
+        {% endif %}
+
+    {% endfor %}
+
+
+{#
+        {% if result.start_date %}
+            <small class="date">{{ result.start_date.strftime('%Y-%m-%d %H:%M:%S (%Z)') }}</small>
+        {% endif %}
+        {% if not is_event %}
+            <small class="parent-event">{{ result.event.title }}</small>
+        {% endif %}
+        {% if result.authors %}
+            <ul class="authors">
+                {% for author in result.authors %}
+                    <li>
+                        {{ author.name }}
+                        <small>({{ author.role }}{% if author.affiliation %}, {{ author.affiliation }}{% endif %})</small>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% if result.description %}
+            {% set truncated = result.description | truncate(100) %}
+            <div class="description">
+                {{ truncated }}
+                {% if truncated != result.description %}
+                    <a class="link show-full-desc js-show-full-desc" href="#">more</a>
+                    <div style="display: none;">{{ result.description }}</div>
+                {% endif %}
+            </div>
+        {% endif %}
+        <ul class="nobulletsListInline material">
+            {% for link, title in result.materials %}
+                <li><a class="link" href="{{ link }}">{{ title }}</a></li>
+            {% endfor %}
+        </ul>
+#}
+    </li>
+{% endblock %}
+
