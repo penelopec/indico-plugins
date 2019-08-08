@@ -68,6 +68,7 @@ class JSONSearchEngine(SearchEngine):
 
     def _build_phrase_query(self):
         phrase = self.values['phrase']
+        phrase = self._escape_symbols(phrase)
         field = self.values['field']
         phrase = ' OR '.join([x.strip() for x in phrase.split()])
         if field:
@@ -75,6 +76,39 @@ class JSONSearchEngine(SearchEngine):
         else:
             qphrase = '(%s)' %phrase
         return qphrase
+
+
+    def _escape_symbols(self, phrase):
+        list_symbols = {'+':'\+',
+                        '-':'\-',
+                        '=':'\=',
+                        '&&':'\&\&',
+                        '||':'\|\|',
+                        '>':'\>',
+                        '<':'\<',
+                        '!':'\!',
+                        '(':'\(',
+                        ')':'\)',
+                        '{':'\{',
+                        '}':'\}',
+                        '[':'\[',
+                        ']':'\]',
+                        '^':'\^',
+                        '"':'\\"',
+                        '~':'\~',
+                        '*':'\*',
+                        '?':'\?',
+                        ':':'\:',
+                        '/':'\/'}
+
+        # first, escape the backslashes 
+        phrase = phrase.replace('\\', '\\\\')
+
+        # then, escape the rest of symbols
+        for k,v in list_symbols.items():
+            phrase = phrase.replace(k, v)
+
+        return phrase
 
 
     def _build_date_query(self):
