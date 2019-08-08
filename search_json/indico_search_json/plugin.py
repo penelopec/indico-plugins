@@ -8,7 +8,7 @@
 from __future__ import unicode_literals
 
 from wtforms.fields.core import SelectField
-from wtforms.fields.html5 import URLField
+from wtforms.fields.html5 import URLField, IntegerField
 from wtforms.validators import URL
 
 from indico.core.plugins import IndicoPluginBlueprint
@@ -21,6 +21,7 @@ from indico_search_json.engine import JSONSearchEngine
 
 class SettingsForm(IndicoForm):
     search_url = URLField(_('CERNsearch URL'), [URL()])
+    results_per_page = IntegerField(_('Number of results per page'))
 
 
 class JSONSearchPlugin(SearchPluginBase):
@@ -32,6 +33,7 @@ class JSONSearchPlugin(SearchPluginBase):
     settings_form = SettingsForm
     default_settings = {
         'search_url': 'https://search.cern.ch/Pages/IndicoFrame.aspx',
+        'results_per_page': 10
     }
     engine_class = JSONSearchEngine
 

@@ -36,6 +36,11 @@ class JSONSearchEngine(SearchEngine):
     def url(self):
         return current_plugin.settings.get('search_url')
 
+    @property
+    def results_per_page(self):
+        return current_plugin.settings.get('results_per_page')
+
+
     def process(self):
 
         # search values
