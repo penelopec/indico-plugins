@@ -20,8 +20,12 @@ from indico_search_json.engine import JSONSearchEngine
 
 
 class SettingsForm(IndicoForm):
-    search_url = URLField(_('CERNsearch URL'), [URL()])
-    results_per_page = IntegerField(_('Number of results per page'))
+    search_url = URLField(_('CERNsearch URL'),
+                          [URL()],
+                          description=_("URL for the CERN Search API"))
+    results_per_page = IntegerField(_('Number of results per page'),
+                                    [NumberRange(min=5)],
+                                    description=_("Number of results to display on each page"))
 
 
 class JSONSearchPlugin(SearchPluginBase):
