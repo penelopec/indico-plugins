@@ -51,9 +51,7 @@ class JSONSearchEngine(SearchEngine):
         self.query_end_date = self.values['end_date']  # datetime.date object
         self.query_field = self.values['field']
 
-        query = self._build_query()
-        query_d = {}
-        query_d['q'] = query
+        query_d = self._build_query()
         out = self._query(query_d)
         return out
 
@@ -61,9 +59,11 @@ class JSONSearchEngine(SearchEngine):
     def _build_query(self):
         qphrase = self._build_phrase_query()
         qdate = self._build_date_query()
-        query = 'q=' + qphrase + qdate
+        query = 'q=' + qphrase + qdate  # FIXME !! Is this needed ???
         query = query.replace(' ', '+')
-        return query
+        query_d = {}
+        query_d['q'] = query
+        return query_d
 
 
     def _build_phrase_query(self):
