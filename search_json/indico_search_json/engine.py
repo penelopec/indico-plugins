@@ -51,9 +51,16 @@ class JSONSearchEngine(SearchEngine):
         self.query_end_date = self.values['end_date']  # datetime.date object
         self.query_field = self.values['field']
 
+        query_out = self._query()
+        result = self._parse_query_out(query_out)
+        return result 
+    
+
+    def _query(self):
         query_d = self._build_query()
-        out = self._query(query_d)
-        return out
+        query_out_str = self._perform_query(query_d)
+        query_out_json  = json.loads(query_out_str)
+        return query_out_json
 
 
     def _build_query(self):
@@ -131,7 +138,39 @@ class JSONSearchEngine(SearchEngine):
         return qdate
 
 
-    def _query(self, query_d):
+    def _perform_query(self, query_d):
+        """
+        output of querying the CERN Search API looks like this
+
+          {
+            "aggregations": {},
+            "hits": {
+              "hits": [
+                {
+                  "created": "2018-03-19T08:16:53.218017+00:00",
+                  "id": 5,
+                  "links": {
+                    "self": "http://<host:port>/api/record/5"
+                  },
+                  "metadata": {
+                    "_access": {<access details>},
+                    "control_number": "5",
+                    "class": "B",
+                    "description": "This is an awesome description for our first uploaded document",
+                    "title": "Demo document"
+                  },
+                  "updated": "2018-03-19T08:16:53.218042+00:00"
+                }
+              ],
+              "total": 2
+            },
+            "links": {
+              "prev": "http://<host:port>/api/records/?page=1&size=1",
+              "self": "http://<host:port>/api/records/?page=2&size=1"
+            }
+          }
+
+        """
         endpoint = '/api/records/'  # FIXME, it has to be the same endpoint set by the livesync plugin
         url = '{0}{1}'.format(self.url, endpoint)
         headers = {
@@ -141,37 +180,13 @@ class JSONSearchEngine(SearchEngine):
         }
         query_out = requests.get(url, headers=headers, query_d)
         if query_out.ok:
-            content = json.loads(query_out.content)
+            return query_out.content
 
-            # content looks like this 
-            #     {
-            #       "aggregations": {},
-            #       "hits": {
-            #         "hits": [
-            #           {
-            #             "created": "2018-03-19T08:16:53.218017+00:00",
-            #             "id": 5,
-            #             "links": {
-            #               "self": "http://<host:port>/api/record/5"
-            #             },
-            #             "metadata": {
-            #               "_access": {<access details>},
-            #               "control_number": "5",
-            #               "class": "B",
-            #               "description": "This is an awesome description for our first uploaded document",
-            #               "title": "Demo document"
-            #             },
-            #             "updated": "2018-03-19T08:16:53.218042+00:00"
-            #           }
-            #         ],
-            #         "total": 2
-            #       },
-            #       "links": {
-            #         "prev": "http://<host:port>/api/records/?page=1&size=1",
-            #         "self": "http://<host:port>/api/records/?page=2&size=1"
-            #       }
-            #     }
 
-            return content
-
+    def _parse_query_out(self, query_out):
+        content = {}
+        content["entries"] = []
+        for result in query_out['hits']['hits']:
+            content["entries"].append(result["metadata"])
+        return content
 
