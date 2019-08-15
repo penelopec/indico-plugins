@@ -139,9 +139,39 @@ class JSONSearchEngine(SearchEngine):
             'Accept': 'application/json',
             'Authorization': 'Bearer <ACCESS_TOKEN>'
         }
-        response = requests.get(url, headers=headers, query_d)
-        if response.ok:
-            content = json.loads(response.content)
+        query_out = requests.get(url, headers=headers, query_d)
+        if query_out.ok:
+            content = json.loads(query_out.content)
+
+            # content looks like this 
+            #     {
+            #       "aggregations": {},
+            #       "hits": {
+            #         "hits": [
+            #           {
+            #             "created": "2018-03-19T08:16:53.218017+00:00",
+            #             "id": 5,
+            #             "links": {
+            #               "self": "http://<host:port>/api/record/5"
+            #             },
+            #             "metadata": {
+            #               "_access": {<access details>},
+            #               "control_number": "5",
+            #               "class": "B",
+            #               "description": "This is an awesome description for our first uploaded document",
+            #               "title": "Demo document"
+            #             },
+            #             "updated": "2018-03-19T08:16:53.218042+00:00"
+            #           }
+            #         ],
+            #         "total": 2
+            #       },
+            #       "links": {
+            #         "prev": "http://<host:port>/api/records/?page=1&size=1",
+            #         "self": "http://<host:port>/api/records/?page=2&size=1"
+            #       }
+            #     }
+
             return content
 
 
