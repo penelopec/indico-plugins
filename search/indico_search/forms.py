@@ -39,7 +39,7 @@ class SearchForm(IndicoForm):
     field = SelectField(_('Search in'), choices=FIELD_CHOICES, default='')
     start_date = IndicoDateField('Start Date', [Optional()])
     end_date = IndicoDateField('End Date', [Optional()])
-    total = StringField()
+    current_page = StringField()
 
     def is_submitted(self):
         return 'search-phrase' in request.args
