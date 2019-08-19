@@ -13,7 +13,7 @@ import requests
 
 from marshmallow import Schema, fields, post_load
 
-from flask import redirect
+from flask import redirect, request
 from flask_pluginengine import current_plugin
 from werkzeug.urls import url_encode
 
