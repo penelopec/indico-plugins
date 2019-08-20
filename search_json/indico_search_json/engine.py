@@ -194,7 +194,7 @@ class JSONSearchEngine(SearchEngine):
         content["entries"] = []
         for result in query_out['hits']['hits']:
             content["entries"].append(result["metadata"])
-        content["current_page"] = request.args['search-current_page']
+        content["current_page"] = request.args.get('search-current_page', '1')
         content["size"] = self.results_per_page
         content["total"] = query_out['hits']['total']
         return content
