@@ -68,6 +68,8 @@ class JSONSearchEngine(SearchEngine):
         qdate = self._build_date_query()
         query = 'q=' + qphrase + qdate  # FIXME !! Is this needed ???
         query = query.replace(' ', '+')
+        qpage = self._get_page_size()
+        query = query + '&page=%s&size=%s' %(qpage, self.results_per_page)
         query_d = {}
         query_d['q'] = query
         return query_d
@@ -136,6 +138,10 @@ class JSONSearchEngine(SearchEngine):
         if not start_date and not end_date:
             qdate = ''
         return qdate
+
+
+    def _get_page_size(self):
+        return request.args.get('search-current_page', '1')
 
 
     def _perform_query(self, query_d):
