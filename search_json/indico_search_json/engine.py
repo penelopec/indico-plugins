@@ -76,9 +76,9 @@ class JSONSearchEngine(SearchEngine):
 
 
     def _build_phrase_query(self):
-        phrase = self.values['phrase']
+        phrase = self._get_arg_from_url('phrase')
         phrase = self._escape_symbols(phrase)
-        field = self.values['field']
+        field = self._get_arg_from_url('field')
         phrase = ' OR '.join([x.strip() for x in phrase.split()])
         if field:
             qphrase = '%s:(%s)' %(field, phrase)
@@ -128,8 +128,8 @@ class JSONSearchEngine(SearchEngine):
         ####if end_date:
         ####    end_date = end_date.strftime('%Y-%m-%d')
 
-        start_date = request.args.get('search-start_date', None)
-        end_date = request.args.get('search-end_date', None)
+        start_date = self._get_arg_from_url('start_date')
+        end_date = self._get_arg_from_url('end_date')
         if start_date:
             start_date = self._fix_date_format(start_date)
         if end_date:
@@ -152,7 +152,7 @@ class JSONSearchEngine(SearchEngine):
 
 
     def _get_page_size(self):
-        return request.args.get('search-current_page', '1')
+        return self._get_arg_from_url('current_page', '1')
 
 
     def _perform_query(self, query_d):
@@ -205,8 +205,17 @@ class JSONSearchEngine(SearchEngine):
         content["entries"] = []
         for result in query_out['hits']['hits']:
             content["entries"].append(result["metadata"])
-        content["current_page"] = request.args.get('search-current_page', '1')
+        content["current_page"] = self._get_arg_from_url('current_page', '1')
         content["size"] = self.results_per_page
         content["total"] = query_out['hits']['total']
         return content
+
+
+    def _get_arg_from_url(self, token, default=None):
+        if not token.startswith('search-'):
+            token = 'search-%s' %token
+        value = request.args.get(token)
+        if not value:
+            value = default
+        return value
 
