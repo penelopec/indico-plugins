@@ -121,13 +121,19 @@ class JSONSearchEngine(SearchEngine):
 
 
     def _build_date_query(self):
-        start_date = self.values['start_date']
-        end_date = self.values['end_date']
+        ####start_date = self.values['start_date']
+        ####end_date = self.values['end_date']
+        ####if start_date:
+        ####    start_date = start_date.strftime('%Y-%m-%d')
+        ####if end_date:
+        ####    end_date = end_date.strftime('%Y-%m-%d')
 
+        start_date = request.args.get('search-start_date', None)
+        end_date = request.args.get('search-end_date', None)
         if start_date:
-            start_date = start_date.strftime('%Y-%m-%d')
+            start_date = self._fix_date_format(start_date)
         if end_date:
-            end_date = end_date.strftime('%Y-%m-%d')
+            end_date = self._fix_date_format(end_date)
 
         if start_date and end_date:
             qdate = ' AND date:[%s TO %s]' %(start_date, end_date)
@@ -138,6 +144,11 @@ class JSONSearchEngine(SearchEngine):
         if not start_date and not end_date:
             qdate = ''
         return qdate
+
+
+    def _fix_date_format(self, date_str):
+        dd, mm, yyyy = date_str.split('/')
+        return "%s-%s-%s" %(yyyy,mm,dd)
 
 
     def _get_page_size(self):
