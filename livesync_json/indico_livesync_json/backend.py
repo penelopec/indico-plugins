@@ -43,7 +43,7 @@ class LivesyncJsonAgentForm(AgentForm):
     es_notes = StringField(_('Elasticsearch Notes JSON Schema'), [DataRequired()],
                           description=_("<notes_vn.n.n.json>: the JSON Schema for the notes Elasticsearch index"))
     tika_server = URLField(_('tika server URL'), [DataRequired(), URL(require_tld=False)],
-                          description=_("URL <url:port> of tika server to parse file content"))
+                          description=_("URL <url:port> of tika server to parse file content. If not supplied a local tika server will be instantiated."))
 
 
 class json_uploaderError(Exception):
@@ -72,6 +72,10 @@ class json_uploader(Uploader):
         self.es_notes = '$schema:{0}{1}{2}'.format(_search_app, endpoint, self.backend.agent.settings.get('es_notes'))
         
         self.tika_server = self.backend.agent.settings.get('tika_server')
+        if not self.tika_server:
+            import tika
+            tika.initVM()
+            self.tika_server = 'http://localhost:9998'
 
     def upload_records(self, records, from_queue):
         if from_queue:
