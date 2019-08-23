@@ -71,10 +71,13 @@ class json_uploader(Uploader):
         self.es_attachments = '$schema:{0}{1}{2}'.format(_search_app, endpoint, self.backend.agent.settings.get('es_attachments'))
         self.es_notes = '$schema:{0}{1}{2}'.format(_search_app, endpoint, self.backend.agent.settings.get('es_notes'))
         
-        self.tika_server = self.backend.agent.settings.get('tika_server')
-        if not self.tika_server:
+        if self.backend.agent.settings.get('tika_server'):
+            self.tika_server = self.backend.agent.settings.get('tika_server')
+        else:
             import tika
+            from indico_livesync_json.plugin import LivesyncJsonPlugin
             tika.initVM()
+            LivesyncJsonPlugin.settings.set('tika_server') = 'http://localhost:9998'
             self.tika_server = 'http://localhost:9998'
 
     def upload_records(self, records, from_queue):
