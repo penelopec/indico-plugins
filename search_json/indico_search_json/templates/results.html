@@ -8,11 +8,49 @@
 {% endblock %}
 
 
+
+{# ============= URLs for previous and/or next page ========================= #}
+
+{% macro base_url(result) %}
+    {% set url = "search?" %}
+    {% set tokens = [] %}
+    {% for k,v in result.request.items() %}
+        {% set token = k~"="~v %}
+        {% set foo = tokens.append(token) %}
+    {% endfor %}
+    {% set tokens_str = tokens|join("&") %}
+    {{ url~tokens_str }}
+{% endmacro %}
+
+{% macro url_for_previous_page(result) %}
+    {% set final_url = base_url(result) ~ "&search-page=" ~ (result.page-1)  %}
+    {{ final_url }}
+{% endmacro %}
+
+{% macro url_for_next_page(result) %}
+    {% set final_url = base_url(result) ~ "&search-page=" ~ (result.page+1)  %}
+    {{ final_url }}
+{% endmacro %}
+
+{# ========================================================================== #}
+
+
 {% block results %}
 
     {% for r in result %}
         {{ render_result(r, is_event=false) }}
     {% endfor %}
+
+
+    {% if result.page > 1 %}
+        <a href="{{ url_for_previous_page(result) }}"> previous </a>
+    {% endif %}
+    {% if result.page * result.size < result.total %}
+        <a href="{{ url_for_next_page(result) }}"> next </a>
+    {% endif %}
+
+
+
 
 {% endblock %}
 

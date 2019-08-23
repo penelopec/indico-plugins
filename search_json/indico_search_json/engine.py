@@ -152,7 +152,7 @@ class JSONSearchEngine(SearchEngine):
 
 
     def _get_page_size(self):
-        return self._get_arg_from_url('current_page', '1')
+        return self._get_arg_from_url('page', '1')
 
 
     def _perform_query(self, query_d):
@@ -205,7 +205,7 @@ class JSONSearchEngine(SearchEngine):
         content["entries"] = []
         for result in query_out['hits']['hits']:
             content["entries"].append(result["metadata"])
-        content["current_page"] = self._get_arg_from_url('current_page', '1')
+        content["page"] = self._get_arg_from_url('page', '1')
         content["size"] = self.results_per_page
         content["total"] = query_out['hits']['total']
         return content
