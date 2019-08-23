@@ -8,31 +8,28 @@
 from __future__ import unicode_literals
 
 from indico_livesync import LiveSyncPluginBase
-from indico_livesync_json.backend import JsonLiveSyncBackend, JsonAgentForm
+from indico_livesync_json.backend import LivesyncJsonBackend, LivesyncJsonAgentForm
 from indico_livesync_json.blueprint import blueprint
-#from indico_livesync_json.forms import SettingsForm
 
 
-class JsonLiveSyncPlugin(LiveSyncPluginBase):
+class LivesyncJsonPlugin(LiveSyncPluginBase):
     """LiveSync JSON
 
     Provides the JSON-search backend for LiveSync
     """
 
     configurable = True
-    settings_form = JsonAgentForm
-    default_settings = {'search_app': '',
-                        'username': '', 
-                        'password': '',
-                        'tika_server': '',
-                        'es_server': '',
+    settings_form = LivesyncJsonAgentForm
+    default_settings = {'search_app_url': '',
+                        'search_app_token': '', 
                         'es_events': '',
                         'es_contributions': '',
                         'es_subcontributions': '',
                         'es_attachments': '',
-                        'es_notes': ''
+                        'es_notes': '',
+                        'tika_server': ''
                         }
-    backend_classes = {'jsonsearch': JsonLiveSyncBackend}
+    backend_classes = {'jsonsearch': LivesyncJsonBackend}
 
     def get_blueprints(self):
         return blueprint
