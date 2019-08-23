@@ -128,14 +128,8 @@ def _get_eventnote_acl(eventnote):
 
 def _get_attachment_content(attachment):
     if attachment.type == AttachmentType.file:
-        # DEVELOPMENT
-        #import tika
-        #tika.initVM()
-        #parsedfile = parser.from_file(attachment.absolute_download_url)['content']
-
-        # PRODUCTION
         from indico_livesync_json.plugin import JsonLiveSyncPlugin
-        parsedfile = parser.from_file(attachment.absolute_download_url, serverEndpoint=JsonLiveSyncPlugin.settings.get('tika_server'))['content']
+        parsedfile = parser.from_file(attachment.absolute_download_url, LivesyncJsonPlugin.settings.get('tika_server'))['content']
         return parsedfile
     else:
         return None
