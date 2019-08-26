@@ -208,6 +208,7 @@ class JSONSearchEngine(SearchEngine):
         content["page"] = self._get_arg_from_url('page', '1')
         content["size"] = self.results_per_page
         content["total"] = query_out['hits']['total']
+        content["request"] = request.args
         return content
 
 
