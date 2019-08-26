@@ -40,16 +40,19 @@ class JSONSearchEngine(SearchEngine):
     def results_per_page(self):
         return current_plugin.settings.get('results_per_page')
 
+    @property
+    def token(self):
+        return current_plugin.settings.get('token')
+
 
     def process(self):
-
         # search values
-        self.username = self.user.name
-        self.useremail = self.user.email
-        self.query_phrase = self.values['phrase']
-        self.query_start_date = self.values['start_date']  # datetime.date object
-        self.query_end_date = self.values['end_date']  # datetime.date object
-        self.query_field = self.values['field']
+        #self.username = self.user.name
+        #self.useremail = self.user.email
+        #self.query_phrase = self.values['phrase']
+        #self.query_start_date = self.values['start_date']  # datetime.date object
+        #self.query_end_date = self.values['end_date']  # datetime.date object
+        #self.query_field = self.values['field']
 
         query_out = self._query()
         result = self._parse_query_out(query_out)
@@ -57,16 +60,35 @@ class JSONSearchEngine(SearchEngine):
     
 
     def _query(self):
-        query_d = self._build_query()
-        query_out_str = self._perform_query(query_d)
-        query_out_json  = json.loads(query_out_str)
-        return query_out_json
+        endpoint = self._get_query_url()
+        headers_d = self._get_query_headers()
+        params_d = self._get_query_params()
+        query_out = self._perform_query(endpoint, headers_d, params_d)
+        query_out = json.loads(query_out)
+        return query_out
 
 
-    def _build_query(self):
+    def _get_query_url(self):
+        endpoint = '/api/records/'
+        url = '{0}{1}'.format(self.url, endpoint)
+        return url
+
+
+    def _get_query_headers(self):
+        token = self.token
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer %s' %token
+        }
+        return headers
+
+
+    def _get_query_params(self):
         qphrase = self._build_phrase_query()
         qdate = self._build_date_query()
-        query = 'q=' + qphrase + qdate  # FIXME !! Is this needed ???
+        #query = 'q=' + qphrase + qdate 
+        query = qphrase + qdate
         query = query.replace(' ', '+')
         qpage = self._get_page_size()
         query = query + '&page=%s&size=%s' %(qpage, self.results_per_page)
@@ -155,7 +177,7 @@ class JSONSearchEngine(SearchEngine):
         return self._get_arg_from_url('page', '1')
 
 
-    def _perform_query(self, query_d):
+    def _perform_query(self, url, headers_d, params_d):
         """
         output of querying the CERN Search API looks like this
 
@@ -188,14 +210,7 @@ class JSONSearchEngine(SearchEngine):
           }
 
         """
-        endpoint = '/api/records/'  # FIXME, it has to be the same endpoint set by the livesync plugin
-        url = '{0}{1}'.format(self.url, endpoint)
-        headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': 'Bearer <ACCESS_TOKEN>'
-        }
-        query_out = requests.get(url, headers=headers, query_d)
+        query_out = requests.get(url, headers=headers_d, params_d)
         if query_out.ok:
             return query_out.content
 
