@@ -94,6 +94,12 @@ class JSONSearchEngine(SearchEngine):
         query = query + '&page=%s&size=%s' %(qpage, self.results_per_page)
         query_d = {}
         query_d['q'] = query
+
+        # ????
+        if self.user:
+            query_d['access'] = self.user.email
+        # ????
+
         return query_d
 
 
