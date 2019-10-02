@@ -181,12 +181,12 @@ class EventSchema(mm.ModelSchema):
     end_date = mm.DateTime(attribute='end_dt')
     location = mm.Function(_get_location)
     speakers_chairs = mm.Nested(PersonLinkSchema, attribute='person_links', many=True)
-    url = mm.String(attribute='external_url')
+    #url = mm.String(attribute='external_url')
 
     class Meta:
         model = Event
         fields = ('_access', 'id', 'category_path', 'event_type', 'creation_date', 'start_date', 'end_date',
-                  'location', 'title', 'description', 'speakers_chairs', 'url')
+                  'location', 'title', 'description', 'speakers_chairs')    #, 'url')
 
 
 class AttachmentSchema(mm.ModelSchema):
@@ -198,12 +198,12 @@ class AttachmentSchema(mm.ModelSchema):
     creation_date = mm.DateTime(attribute='modified_dt')
     filename = mm.String(attribute='file.filename')
     content = mm.Function(_get_attachment_content)
-    url = mm.String(attribute='absolute_download_url')
+    #url = mm.String(attribute='absolute_download_url')
 
     class Meta:
         model = Event
         fields = ('_access', 'id', 'category_path', 'event_id', 'contribution_id', 'subcontribution_id',
-                  'creation_date', 'filename', 'content', 'url')
+                  'creation_date', 'filename', 'content')   #, 'url')
 
 
 class ContributionSchema(mm.ModelSchema):
@@ -214,12 +214,12 @@ class ContributionSchema(mm.ModelSchema):
     end_date = mm.DateTime(attribute='end_dt')
     location = mm.Function(_get_location)
     list_of_persons = mm.Nested(PersonLinkSchema, attribute='person_links', many=True)
-    url = mm.Function(_get_contribution_url)
+    #url = mm.Function(_get_contribution_url)
 
     class Meta:
         model = Event
         fields = ('_access', 'id', 'category_path', 'event_id', 'creation_date', 'start_date', 'end_date', 'location',
-                  'title', 'description', 'list_of_persons', 'url')
+                  'title', 'description', 'list_of_persons')    #, 'url')
 
 
 class SubContributionSchema(mm.ModelSchema):
@@ -229,12 +229,12 @@ class SubContributionSchema(mm.ModelSchema):
     contribution_id = mm.Integer(attribute='contribution_id')
     location = mm.Function(_get_location_subcontribution)
     list_of_persons = mm.Nested(PersonLinkSchema, attribute='person_links', many=True)
-    url = mm.Function(_get_subcontribution_url)
+    #url = mm.Function(_get_subcontribution_url)
 
     class Meta:
         model = Event
         fields = ('_access', 'id', 'category_path', 'event_id', 'contribution_id', 'creation_date', 'start_date',
-                  'end_date', 'location', 'title', 'description', 'list_of_persons', 'url')
+                  'end_date', 'location', 'title', 'description', 'list_of_persons')    #, 'url')
 
 
 class EventNoteSchema(mm.ModelSchema):
@@ -245,9 +245,9 @@ class EventNoteSchema(mm.ModelSchema):
     subcontribution_id = mm.Integer(attribute='subcontribution_id')
     creation_date = mm.DateTime(attribute='current_revision.created_dt')
     content = mm.String(attribute='html')
-    url = mm.Function(_get_eventnote_url)
+    #url = mm.Function(_get_eventnote_url)
 
     class Meta:
         model = Event
         fields = ('_access', 'id', 'category_path', 'event_id', 'contribution_id', 'subcontribution_id', 
-                  'creation_date', 'content', 'url')
+                  'creation_date', 'content')   #, 'url')
