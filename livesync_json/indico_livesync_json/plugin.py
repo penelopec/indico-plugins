@@ -22,11 +22,11 @@ class LivesyncJsonPlugin(LiveSyncPluginBase):
     settings_form = LivesyncJsonAgentForm
     default_settings = {'search_app_url': '',
                         'search_app_token': '', 
-                        'es_events': 'events_v1.0.0.json',
-                        'es_contributions': 'contributions_v1.0.0.json',
-                        'es_subcontributions': 'subcontributions_v1.0.0.json',
-                        'es_attachments': 'attachments_v1.0.0.json',
-                        'es_notes': 'notes_v1.0.0.json',
+                        'es_events': 'events_v1.1.0.json',
+                        'es_contributions': 'contributions_v1.1.0.json',
+                        'es_subcontributions': 'subcontributions_v1.1.0.json',
+                        'es_attachments': 'attachments_v1.1.0.json',
+                        'es_notes': 'notes_v1.1.0.json',
                         'tika_server': ''
                         }
     backend_classes = {'jsonsearch': LivesyncJsonBackend}
