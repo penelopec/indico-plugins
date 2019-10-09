@@ -29,7 +29,7 @@ class LivesyncJsonPlugin(LiveSyncPluginBase):
                         'es_notes': 'notes_v1.1.0.json',
                         'tika_server': ''
                         }
-    backend_classes = {'jsonsearch': LivesyncJsonBackend}
+    backend_classes = {'livesyncjson': LivesyncJsonBackend}
 
     def get_blueprints(self):
         return blueprint
