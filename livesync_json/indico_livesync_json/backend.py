@@ -23,7 +23,6 @@ from indico.modules.events.notes.models.notes import EventNote
 
 from indico_livesync_json.models.search_id_map import EntryType, livesyncjson_searchapp_id_map
 from indico_livesync_json.schemas import EventSchema, ContributionSchema, SubContributionSchema, AttachmentSchema, EventNoteSchema
-from indico_livesync_json.plugin import LiveSyncJsonPlugin
 from indico_livesync import LiveSyncBackendBase, SimpleChange
 from indico_livesync import Uploader
 from indico_livesync_json import _
@@ -36,6 +35,8 @@ class livesyncjson_uploaderError(Exception):
 class livesyncjson_uploader(Uploader):
 
     def __init__(self, *args, **kwargs): 
+        from indico_livesync_json.plugin import LiveSyncJsonPlugin
+        
         _search_app = LiveSyncJsonPlugin.settings.get('search_app_url').rstrip('/')
         endpoint = '/indico/records/'
         self.search_url = '{0}{1}'.format(_search_app, endpoint)
