@@ -18,7 +18,7 @@ from indico_livesync_json.blueprint import blueprint
 
 
 class livesyncjson_settingsform(IndicoForm):
-    search_app_url = URLField(_('Search app URL'), [DataRequired(), URL(require_tld=False)],
+    search_app_url = URLField(_('Search app URL'), [DataRequired()],
                           description=_("URL <url:port> of search app import endpoint"))
     search_app_token = StringField(_('Search app TOKEN'), [DataRequired()],
                           description=_("TOKEN  for accessing the Search app import endpoint"))
@@ -32,7 +32,7 @@ class livesyncjson_settingsform(IndicoForm):
                           description=_("<attachments_vn.n.n.json>: the JSON Schema for the attachments Elasticsearch index"))
     es_notes = StringField(_('Elasticsearch Notes JSON Schema'), [DataRequired()],
                           description=_("<notes_vn.n.n.json>: the JSON Schema for the notes Elasticsearch index"))
-    tika_server = URLField(_('tika server URL'), [DataRequired(), URL(require_tld=False)],
+    tika_server = URLField(_('tika server URL'), [DataRequired()],
                           description=_("URL <url:port> of tika server to parse file content. If not supplied a local tika server will be instantiated."))
 
 
