@@ -73,12 +73,12 @@ class json_uploader(Uploader):
         
         if self.backend.agent.settings.get('tika_server'):
             self.tika_server = self.backend.agent.settings.get('tika_server')
-        else:
-            import tika
-            from indico_livesync_json.plugin import LivesyncJsonPlugin
-            tika.initVM()
-            LivesyncJsonPlugin.settings.set('tika_server') = 'http://localhost:9998'
-            self.tika_server = 'http://localhost:9998'
+        #else:
+        #    import tika
+        #    from indico_livesync_json.plugin import LivesyncJsonPlugin
+        #    tika.initVM()
+        #    LivesyncJsonPlugin.settings.set('tika_server') = 'http://localhost:9998'
+        #    self.tika_server = 'http://localhost:9998'
 
     def upload_records(self, records, from_queue):
         if from_queue:
