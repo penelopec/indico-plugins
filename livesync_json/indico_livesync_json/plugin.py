@@ -18,9 +18,9 @@ from indico_livesync_json.blueprint import blueprint
 
 
 class livesyncjson_settingsform(IndicoForm):
-    search_app_url = URLField(_('Search app URL'), [DataRequired()],
+    searchapp_url = URLField(_('Search app URL'), [DataRequired()],
                           description=_("URL <url:port> of search app import endpoint"))
-    search_app_token = StringField(_('Search app TOKEN'), [DataRequired()],
+    searchapp_token = StringField(_('Search app TOKEN'), [DataRequired()],
                           description=_("TOKEN  for accessing the Search app import endpoint"))
     es_events = StringField(_('Elasticsearch Events JSON Schema'), [DataRequired()],
                           description=_("<events_vn.n.n.json>: the JSON Schema for the events Elasticsearch index"))
