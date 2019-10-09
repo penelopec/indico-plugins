@@ -34,23 +34,23 @@ class livesyncjson_uploader(Uploader):
     def __init__(self, *args, **kwargs): 
         from indico_livesync_json.plugin import LiveSyncJsonPlugin
         
-        _search_app = LiveSyncJsonPlugin.settings.get('search_app_url').rstrip('/')
+        search_app = LiveSyncJsonPlugin.settings.get('searchapp_url').rstrip('/')
         endpoint = '/indico/records/'
-        self.search_url = '{0}{1}'.format(_search_app, endpoint)
+        self.search_url = '{0}{1}'.format(search_app, endpoint)
         self.headers = {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'Authorization': 'Bearer {}'.format(LiveSyncJsonPlugin.settings.get('search_app_token'))
+                    'Authorization': 'Bearer {}'.format(LiveSyncJsonPlugin.settings.get('searchapp_token'))
                 }
         
         # for the $schema: http://cernsearchdocs.web.cern.ch/cernsearchdocs/usage/schemas/
         # and http://cernsearchdocs.web.cern.ch/cernsearchdocs/usage/operations/
         endpoint = '/schemas/indico/'
-        self.es_events = '$schema:{0}{1}{2}'.format(_search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_events'))
-        self.es_contributions = '$schema:{0}{1}{2}'.format(_search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_contributions'))
-        self.es_subcontributions = '$schema:{0}{1}{2}'.format(_search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_subcontributions'))
-        self.es_attachments = '$schema:{0}{1}{2}'.format(_search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_attachments'))
-        self.es_notes = '$schema:{0}{1}{2}'.format(_search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_notes'))
+        self.es_events = '$schema:{0}{1}{2}'.format(search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_events'))
+        self.es_contributions = '$schema:{0}{1}{2}'.format(search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_contributions'))
+        self.es_subcontributions = '$schema:{0}{1}{2}'.format(search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_subcontributions'))
+        self.es_attachments = '$schema:{0}{1}{2}'.format(search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_attachments'))
+        self.es_notes = '$schema:{0}{1}{2}'.format(search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_notes'))
         self.tika_server = LiveSyncJsonPlugin.settings.get('tika_server')
 
     def upload_records(self, records, from_queue):
