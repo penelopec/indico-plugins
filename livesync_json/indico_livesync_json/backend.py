@@ -9,9 +9,6 @@ from __future__ import unicode_literals
 
 import requests
 from lxml import etree
-from wtforms.fields.core import StringField
-from wtforms.fields.html5 import URLField
-from wtforms.validators import URL, DataRequired
 import json
 
 from indico.web.forms.base import IndicoForm
