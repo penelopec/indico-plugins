@@ -21,12 +21,12 @@ from indico.modules.events.contributions.models.subcontributions import SubContr
 from indico.modules.attachments import Attachment
 from indico.modules.events.notes.models.notes import EventNote
 
-from indico_livesync_json.plugin import LiveSyncJsonPlugin 
 from indico_livesync_json.models.search_id_map import EntryType, livesyncjson_searchapp_id_map
 from indico_livesync_json.schemas import EventSchema, ContributionSchema, SubContributionSchema, AttachmentSchema, EventNoteSchema
 from indico_livesync import LiveSyncBackendBase, SimpleChange
 from indico_livesync import Uploader
 from indico_livesync_json import _
+from indico_livesync_json.plugin import LiveSyncJsonPlugin 
 
 
 class livesyncjson_uploaderError(Exception):
