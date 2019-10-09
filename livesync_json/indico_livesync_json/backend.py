@@ -53,14 +53,7 @@ class livesyncjson_uploader(Uploader):
         self.es_subcontributions = '$schema:{0}{1}{2}'.format(_search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_subcontributions'))
         self.es_attachments = '$schema:{0}{1}{2}'.format(_search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_attachments'))
         self.es_notes = '$schema:{0}{1}{2}'.format(_search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_notes'))
-        
-        if LiveSyncJsonPlugin.settings.get('tika_server'):
-            self.tika_server = LiveSyncJsonPlugin.settings.get('tika_server')
-        else:
-            import tika
-            tika.initVM()
-            LiveSyncJsonPlugin.settings.set('tika_server') = 'http://localhost:9998'
-            self.tika_server = 'http://localhost:9998'
+        self.tika_server = LiveSyncJsonPlugin.settings.get('tika_server')
 
     def upload_records(self, records, from_queue):
         if from_queue:
