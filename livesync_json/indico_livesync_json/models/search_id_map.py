@@ -53,8 +53,8 @@ def _make_checks():
         yield db.CheckConstraint(condition, 'valid_{}_entry'.format(link_type.name))
 
 
-class Livesync_json_cern_search_id_map_entry(db.Model):
-    __tablename__ = 'cern_search_id_map'
+class livesyncjson_searchapp_id_map(db.Model):
+    __tablename__ = 'searchapp_id_map'
     __table_args__ = tuple(_make_checks()) + ({'schema': 'plugin_livesync'},)
 
     #: Entry ID
