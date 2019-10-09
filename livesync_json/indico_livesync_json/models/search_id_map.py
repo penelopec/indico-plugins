@@ -170,7 +170,7 @@ class Livesync_json_cern_search_id_map_entry(db.Model):
     )
 
     note = db.relationship(
-        'Note',
+        'EventNote',
         lazy=False,
         backref=db.backref(
             'livesync_json_es_entries',
