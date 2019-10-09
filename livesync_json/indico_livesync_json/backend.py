@@ -21,7 +21,7 @@ from indico.modules.events.contributions.models.subcontributions import SubContr
 from indico.modules.attachments import Attachment
 from indico.modules.events.notes.models.notes import EventNote
 
-from indico_livesync_json.plugin import livesyncjson_settingsform
+from indico_livesync_json.plugin import LiveSyncJsonPlugin 
 from indico_livesync_json.models.search_id_map import EntryType, livesyncjson_searchapp_id_map
 from indico_livesync_json.schemas import EventSchema, ContributionSchema, SubContributionSchema, AttachmentSchema, EventNoteSchema
 from indico_livesync import LiveSyncBackendBase, SimpleChange
@@ -36,33 +36,31 @@ class livesyncjson_uploaderError(Exception):
 class livesyncjson_uploader(Uploader):
 
     def __init__(self, *args, **kwargs): 
-        _search_app = self.backend.agent.settings.get('search_app_url').rstrip('/')
+        _search_app = LiveSyncJsonPlugin.settings.get('search_app_url').rstrip('/')
         endpoint = '/indico/records/'
         self.search_url = '{0}{1}'.format(_search_app, endpoint)
         self.headers = {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'Authorization': 'Bearer {}'.format(self.backend.agent.settings.get('search_app_token'))
+                    'Authorization': 'Bearer {}'.format(LiveSyncJsonPlugin.settings.get('search_app_token'))
                 }
         
         # for the $schema: http://cernsearchdocs.web.cern.ch/cernsearchdocs/usage/schemas/
         # and http://cernsearchdocs.web.cern.ch/cernsearchdocs/usage/operations/
         endpoint = '/schemas/indico/'
-        self.es_events = '$schema:{0}{1}{2}'.format(_search_app, endpoint, self.backend.agent.settings.get('es_events'))
-        self.es_contributions = '$schema:{0}{1}{2}'.format(_search_app, endpoint, self.backend.agent.settings.get('es_contributions'))
-        self.es_subcontributions = '$schema:{0}{1}{2}'.format(_search_app, endpoint, self.backend.agent.settings.get('es_subcontributions'))
-        self.es_attachments = '$schema:{0}{1}{2}'.format(_search_app, endpoint, self.backend.agent.settings.get('es_attachments'))
-        self.es_notes = '$schema:{0}{1}{2}'.format(_search_app, endpoint, self.backend.agent.settings.get('es_notes'))
-        self.tika_server = self.backend.agent.settings.get('tika_server')
+        self.es_events = '$schema:{0}{1}{2}'.format(_search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_events'))
+        self.es_contributions = '$schema:{0}{1}{2}'.format(_search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_contributions'))
+        self.es_subcontributions = '$schema:{0}{1}{2}'.format(_search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_subcontributions'))
+        self.es_attachments = '$schema:{0}{1}{2}'.format(_search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_attachments'))
+        self.es_notes = '$schema:{0}{1}{2}'.format(_search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_notes'))
         
-#        if self.backend.agent.settings.get('tika_server'):
-#            self.tika_server = self.backend.agent.settings.get('tika_server')
-#        else:
-#            import tika
-#            from indico_livesync_json.plugin import LiveSyncJsonPlugin
-#            tika.initVM()
-#            LiveSyncJsonPlugin.settings.set('tika_server') = 'http://localhost:9998'
-#            self.tika_server = 'http://localhost:9998'
+        if LiveSyncJsonPlugin.settings.get('tika_server'):
+            self.tika_server = LiveSyncJsonPlugin.settings.get('tika_server')
+        else:
+            import tika
+            tika.initVM()
+            LiveSyncJsonPlugin.settings.set('tika_server') = 'http://localhost:9998'
+            self.tika_server = 'http://localhost:9998'
 
     def upload_records(self, records, from_queue):
         if from_queue:
