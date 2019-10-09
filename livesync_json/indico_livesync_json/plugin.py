@@ -7,6 +7,10 @@
 
 from __future__ import unicode_literals
 
+from wtforms.fields.core import StringField
+from wtforms.fields.html5 import URLField
+from wtforms.validators import URL, DataRequired
+
 from indico.web.forms.base import IndicoForm
 from indico_livesync import LiveSyncPluginBase
 from indico_livesync_json.backend import livesyncjson_backend
