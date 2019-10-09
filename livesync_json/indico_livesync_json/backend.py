@@ -14,6 +14,7 @@ from wtforms.fields.html5 import URLField
 from wtforms.validators import URL, DataRequired
 import json
 
+from indico.web.forms.base import IndicoForm
 from indico.modules.events import Event
 from indico.modules.events.contributions import Contribution
 from indico.modules.events.contributions.models.subcontributions import SubContribution
@@ -27,7 +28,7 @@ from indico_livesync import Uploader
 from indico_livesync_json import _
 
 
-class LivesyncJsonForm(AgentForm):
+class LivesyncJsonForm(IndicoForm):
     search_app_url = URLField(_('Search app URL'), [DataRequired(), URL(require_tld=False)],
                           description=_("URL <url:port> of search app import endpoint"))
     search_app_token = StringField(_('Search app TOKEN'), [DataRequired()],
