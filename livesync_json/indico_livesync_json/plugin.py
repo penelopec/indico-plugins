@@ -7,6 +7,7 @@
 
 from __future__ import unicode_literals
 
+from indico.web.forms.base import IndicoForm
 from indico_livesync import LiveSyncPluginBase
 from indico_livesync_json.backend import livesyncjson_backend
 from indico_livesync_json.blueprint import blueprint
