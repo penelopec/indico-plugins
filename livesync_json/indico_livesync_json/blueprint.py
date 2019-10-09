@@ -6,8 +6,8 @@
 # the LICENSE file for more details.
 
 from __future__ import unicode_literals
+
 from indico.core.plugins import IndicoPluginBlueprint
-from indico_livesync_json.controllers import RHCategoriesJSON
 
 
 blueprint = IndicoPluginBlueprint('livesync_json', __name__)
