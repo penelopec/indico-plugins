@@ -1,4 +1,4 @@
-graft indico_livesync/migrations
-graft indico_livesync/models
+graft indico_livesync_json/migrations
+graft indico_livesync_json/models
 
 global-exclude *.pyc __pycache__ .keep
