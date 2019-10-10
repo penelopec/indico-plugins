@@ -15,6 +15,7 @@ from indico.web.forms.base import IndicoForm
 from indico_livesync import LiveSyncPluginBase
 from indico_livesync_json.backend import livesyncjson_backend
 from indico_livesync_json.blueprint import blueprint
+from indico_livesync_json import _
 
 
 class livesyncjson_settingsform(IndicoForm):
