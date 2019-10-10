@@ -26,7 +26,7 @@ setup(
         'indico-plugin-livesync>=1.0'
     ],
     entry_points={
-        'indico.plugins': {'livesync_json = indico_livesync_json.plugin:LivesyncJsonPlugin'}
+        'indico.plugins': {'livesync_json = indico_livesync_json.plugin:LivesyncJsonPlugin' }
     },
     classifiers=[
         'Environment :: Plugins',
