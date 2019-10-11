@@ -38,9 +38,9 @@ class livesyncjson_settingsform(IndicoForm):
 
 
 class LiveSyncJsonPlugin(LiveSyncPluginBase):
-    """LiveSync JSON
+    """LiveSync_JSON
 
-    Provides the JSON-search backend for LiveSync
+    Provides the LiveSync-JSON agent for LiveSync
     """
 
     configurable = True
