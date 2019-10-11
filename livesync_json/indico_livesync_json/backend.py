@@ -115,9 +115,9 @@ class livesyncjson_uploader(Uploader):
 
 
 class livesyncjson_backend(LiveSyncBackendBase):
-    """JSON-search
+    """LiveSync-JSON
 
-    This backend uploads data to JSON-search.
+    This backend uploads data to CERN-search.
     """
 
     uploader = livesyncjson_uploader
