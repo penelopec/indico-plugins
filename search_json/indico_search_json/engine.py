@@ -22,14 +22,6 @@ from indico.core.plugins import get_plugin_template_module
 from indico_search import SearchEngine
 
 
-
-#FIELD_MAP = {'title': 'titlereplica',
-#             'abstract': 'description',
-#             'author': 'authors',
-#             'affiliation': 'companies',
-#             'keyword': 'keywords'}
-
-
 class JSONSearchEngine(SearchEngine):
    
     @property
@@ -46,14 +38,6 @@ class JSONSearchEngine(SearchEngine):
 
 
     def process(self):
-        # search values
-        #self.username = self.user.name
-        #self.useremail = self.user.email
-        #self.query_phrase = self.values['phrase']
-        #self.query_start_date = self.values['start_date']  # datetime.date object
-        #self.query_end_date = self.values['end_date']  # datetime.date object
-        #self.query_field = self.values['field']
-
         query_out = self._query()
         result = self._parse_query_out(query_out)
         return result 
@@ -149,12 +133,6 @@ class JSONSearchEngine(SearchEngine):
 
 
     def _build_date_query(self):
-        ####start_date = self.values['start_date']
-        ####end_date = self.values['end_date']
-        ####if start_date:
-        ####    start_date = start_date.strftime('%Y-%m-%d')
-        ####if end_date:
-        ####    end_date = end_date.strftime('%Y-%m-%d')
 
         start_date = self._get_arg_from_url('start_date')
         end_date = self._get_arg_from_url('end_date')
