@@ -66,7 +66,7 @@ def _get_category_path(obj):
 
 def _get_event_acl(event):
     if event.effective_protection_mode == ProtectionMode.public:
-        acl = ['ANONYMOUS']
+        acl = ['']
     else:
         acl = set(itertools.chain.from_iterable(_get_identifiers(x.principal) for x in event.acl_entries))
     return {'read': sorted(acl), 'owner': [], 'update': [], 'delete': []}
@@ -84,7 +84,7 @@ def _get_attachment_acl(attachment):
 
     acl = set(itertools.chain.from_iterable(_get_identifiers(x) for x in principals))
     if not len(acl):
-         acl.add('ANONYMOUS')
+         acl.add('')
     return {'read': sorted(acl), 'owner': [], 'update': [], 'delete': []}
 
 
@@ -98,7 +98,7 @@ def _get_obj_acl(obj):
 
     acl = set(itertools.chain.from_iterable(_get_identifiers(x) for x in principals))
     if not len(acl):
-         acl.add('ANONYMOUS')
+         acl.add('')
     return {'read': sorted(acl), 'owner': [], 'update': [], 'delete': []}
 
 
