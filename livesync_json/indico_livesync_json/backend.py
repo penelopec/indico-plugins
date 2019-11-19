@@ -108,8 +108,9 @@ class livesyncjson_uploader(Uploader):
         if response.status_code != 200:
             raise livesyncjson_uploaderError('{} - {}'.format(response.status_code, response.text))
         elif change_type == SimpleChange.created:
-            if response.id:
-                livesyncjson_searchapp_id_map.create(response.id, obj_id, entry_type)
+            content = json.loads(response.content)
+            if content["control_number"]:
+                livesyncjson_searchapp_id_map.create(content["control_number"], obj_id, entry_type)
             else:
                 raise livesyncjson_uploaderError('Cannot create the search id mapping: {} - {}'.format(response.status_code, response.text))
 
