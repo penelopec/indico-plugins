@@ -7,6 +7,9 @@
 
 from __future__ import unicode_literals
 
+from babel.numbers import format_currency
+
+from flask import session
 from flask_pluginengine import render_plugin_template
 
 from wtforms.fields.core import StringField, BooleanField
@@ -24,13 +27,11 @@ from indico_payment_paypal import _
 from indico_payment_paypal.blueprint import blueprint
 from indico_payment_paypal.util import validate_business
 
-from babel.numbers import format_currency
-from flask import session
 
 class PluginSettingsForm(PaymentPluginSettingsFormBase):
     url = URLField(_('API URL'), [DataRequired()], description=_('URL of the PayPal HTTP API.'))
     business = StringField(_('Business'), [Optional(), validate_business],
-                           description=_('The default PayPal ID or email address associated with a PayPal account.'
+                           description=_('The default PayPal ID or email address associated with a PayPal account. '
                                          'Event managers will be able to override this.'))
     itemize = BooleanField(_('Itemize PayPal Cart'), [Optional()], widget=SwitchWidget(),
                            description=_('Check to itemize the PayPal cart'))
@@ -67,7 +68,7 @@ class PaypalPaymentPlugin(PaymentPluginMixin, IndicoPlugin):
 
     def create_choice_data(self, data_list, title1, title2, price, quantity, price_info):
         choice = {'title': '{} {dash} {}'.format(title1, title2, dash='-' if title2 else ''),
-                  'price': format_currency(price, '', u'#0.00', locale=session.lang or 'en_GB'),
+                  'price': format_currency(price, '', '0.00', locale=session.lang or 'en_GB'),
                   'quantity': quantity,
                   'price_info': price_info}
         data_list.append(choice)
@@ -84,8 +85,7 @@ class PaypalPaymentPlugin(PaymentPluginMixin, IndicoPlugin):
         registration = data['registration']
         data['item_name'] = '{}: registration for {}'.format(
             unicode_to_ascii(remove_accents(registration.full_name, reencode=False)),
-            unicode_to_ascii(remove_accents(event.title, reencode=False))
-        )
+            unicode_to_ascii(remove_accents(event.title, reencode=False)))
         data['return_url'] = url_for_plugin('payment_paypal.success', registration.locator.uuid, _external=True)
         data['cancel_url'] = url_for_plugin('payment_paypal.cancel', registration.locator.uuid, _external=True)
         data['notify_url'] = url_for_plugin('payment_paypal.notify', registration.locator.uuid, _external=True)
