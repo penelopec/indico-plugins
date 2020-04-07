@@ -38,9 +38,9 @@ class PluginSettingsForm(PaymentPluginSettingsFormBase):
 
 
 class EventSettingsForm(PaymentEventSettingsFormBase):
-    business = StringField(_('Business'), [UsedIf(lambda form, _: form.enabled.data), DataRequired(),
-                                               validate_business],
-                               description=_('The PayPal ID or email address associated with a PayPal account.'))
+#    business = StringField(_('Business'), [UsedIf(lambda form, _: form.enabled.data), DataRequired(),
+#                                               validate_business],
+#                               description=_('The PayPal ID or email address associated with a PayPal account.'))
     itemize = BooleanField(_('Itemize PayPal Cart'), [Optional()], 
                            [UsedIf(lambda form, _: form.enabled.data), DataRequired(), validate_business],
                            widget=SwitchWidget(), description=_('Check to itemize the PayPal cart'))
@@ -60,7 +60,7 @@ class PaypalPaymentPlugin(PaymentPluginMixin, IndicoPlugin):
                         'itemize': False}
     default_event_settings = {'enabled': False,
                               'method_name': None,
-                              'business': None,
+#                              'business': None,
                               'itemize': False}
 
     def init(self):
