@@ -33,16 +33,20 @@ class PluginSettingsForm(PaymentPluginSettingsFormBase):
     business = StringField(_('Business'), [Optional(), validate_business],
                            description=_('The default PayPal ID or email address associated with a PayPal account. '
                                          'Event managers will be able to override this.'))
+    show_business = BooleanField(_('Show Business to Event Managers'), [Optional()], widget=SwitchWidget(),
+                           description=_('Check to allow modification of Business to Event Managers'))
     itemize = BooleanField(_('Itemize PayPal Cart'), [Optional()], widget=SwitchWidget(),
                            description=_('Check to itemize the PayPal cart'))
 
 
 class EventSettingsForm(PaymentEventSettingsFormBase):
-    business = StringField(_('Business'), [UsedIf(lambda form, _: form.enabled.data), DataRequired(),
-                                           validate_business],
-                           description=_('The PayPal ID or email address associated with a PayPal account.'))
-    itemize = BooleanField(_('Itemize PayPal Cart'), [Optional()], widget=SwitchWidget(),
-                           description=_('Check to itemize the PayPal cart'))
+    if form.show_business.data:
+        business = StringField(_('Business'), [UsedIf(lambda form, _: form.enabled.data), DataRequired(),
+                                               validate_business],
+                               description=_('The PayPal ID or email address associated with a PayPal account.'))
+    itemize = BooleanField(_('Itemize PayPal Cart'), [Optional()], 
+                           [UsedIf(lambda form, _: form.enabled.data), DataRequired(), validate_business],
+                           widget=SwitchWidget(), description=_('Check to itemize the PayPal cart'))
 
 
 class PaypalPaymentPlugin(PaymentPluginMixin, IndicoPlugin):
