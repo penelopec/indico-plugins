@@ -160,6 +160,12 @@ def _get_subcontribution_url(obj):
 
 def _get_eventnote_url(obj):
     return url_for('event_notes.view', obj, _external=True)
+    
+def _get_people_list(obj):
+    peopleList = []
+    for item in obj:
+        peopleList.append(item['name'] + ' (' + item['affiliation'] + ')')
+    return peopleList
 
 
 class PersonLinkSchema(mm.Schema):
@@ -180,7 +186,7 @@ class EventSchema(mm.ModelSchema):
     start_date = mm.DateTime(attribute='start_dt')
     end_date = mm.DateTime(attribute='end_dt')
     location = mm.Function(_get_location)
-    speakers_chairs = mm.Nested(PersonLinkSchema, attribute='person_links', many=True)
+    speakers_chairs = _get_people_list(mm.Nested(PersonLinkSchema, attribute='person_links', many=True))
     url = mm.String(attribute='external_url')
 
     class Meta:
@@ -213,7 +219,7 @@ class ContributionSchema(mm.ModelSchema):
     start_date = mm.DateTime(attribute='start_dt')
     end_date = mm.DateTime(attribute='end_dt')
     location = mm.Function(_get_location)
-    list_of_persons = mm.Nested(PersonLinkSchema, attribute='person_links', many=True)
+    list_of_persons = _get_people_list(mm.Nested(PersonLinkSchema, attribute='person_links', many=True))
     url = mm.Function(_get_contribution_url)
 
     class Meta:
@@ -228,7 +234,7 @@ class SubContributionSchema(mm.ModelSchema):
     event_id = mm.Integer(attribute='event.id')
     contribution_id = mm.Integer(attribute='contribution_id')
     location = mm.Function(_get_location_subcontribution)
-    list_of_persons = mm.Nested(PersonLinkSchema, attribute='person_links', many=True)
+    list_of_persons = _get_people_list(mm.Nested(PersonLinkSchema, attribute='person_links', many=True))
     url = mm.Function(_get_subcontribution_url)
 
     class Meta:
