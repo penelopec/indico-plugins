@@ -42,15 +42,13 @@ class livesyncjson_uploader(Uploader):
                     'Accept': 'application/json',
                     'Authorization': 'Bearer {}'.format(LiveSyncJsonPlugin.settings.get('searchapp_token'))
                 }
-        
-        # for the $schema: http://cernsearchdocs.web.cern.ch/cernsearchdocs/usage/schemas/
-        # and http://cernsearchdocs.web.cern.ch/cernsearchdocs/usage/operations/
+
         endpoint = '/schemas/indico/'
-        self.es_events = '$schema:{0}{1}{2}'.format(search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_events'))
-        self.es_contributions = '$schema:{0}{1}{2}'.format(search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_contributions'))
-        self.es_subcontributions = '$schema:{0}{1}{2}'.format(search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_subcontributions'))
-        self.es_attachments = '$schema:{0}{1}{2}'.format(search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_attachments'))
-        self.es_notes = '$schema:{0}{1}{2}'.format(search_app, endpoint, LiveSyncJsonPlugin.settings.get('es_notes'))
+        self.es_events = '$schema:{0}{1}{2}'.format(search_app, endpoint, 'events_v1.1.0.json')
+        self.es_contributions = '$schema:{0}{1}{2}'.format(search_app, endpoint, 'contributions_v1.1.0.json')
+        self.es_subcontributions = '$schema:{0}{1}{2}'.format(search_app, endpoint, 'subcontributions_v1.1.0.json')
+        self.es_attachments = '$schema:{0}{1}{2}'.format(search_app, endpoint, 'attachments_v1.1.0.json')
+        self.es_notes = '$schema:{0}{1}{2}'.format(search_app, endpoint, 'notes_v1.1.0.json')
         self.tika_server = LiveSyncJsonPlugin.settings.get('tika_server')
 
     def upload_records(self, records, from_queue):
@@ -88,7 +86,6 @@ class livesyncjson_uploader(Uploader):
         return response
 
     def upload_jsondata(self, jsondata, change_type, obj_id, entry_type):
-        # http://cernsearchdocs.web.cern.ch/cernsearchdocs/example/
         if change_type == SimpleChange.created:
             response = requests.post(self.search_url, headers=self.headers, json=jsondata)
         else:
