@@ -35,8 +35,8 @@ class LiveSyncJsonPlugin(LiveSyncPluginBase):
 
     configurable = True
     settings_form = livesyncjson_settingsform
-    default_settings = {'search_app_url': '',
-                        'search_app_token': '', 
+    default_settings = {'searchapp_url': '',
+                        'searchapp_token': '', 
                         'tika_server': ''
                         }
     backend_classes = {'livesyncjson': livesyncjson_backend}
