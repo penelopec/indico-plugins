@@ -10,7 +10,6 @@ from __future__ import unicode_literals
 import requests
 import json
 
-from flask_pluginengine import current_plugin
 from indico.core.plugins import IndicoPlugin
 from indico.web.forms.base import IndicoForm
 from indico.modules.events import Event
