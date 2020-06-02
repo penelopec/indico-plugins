@@ -8,9 +8,9 @@
 from __future__ import unicode_literals
 
 import requests
-from lxml import etree
 import json
 
+from indico.core.plugins import IndicoPlugin
 from indico.web.forms.base import IndicoForm
 from indico.modules.events import Event
 from indico.modules.events.contributions import Contribution
@@ -29,7 +29,7 @@ class livesyncjson_uploaderError(Exception):
     pass
 
 
-class livesyncjson_uploader(Uploader):
+class livesyncjson_uploader(Uploader, IndicoPlugin):
 
     def __init__(self, *args, **kwargs): 
         from indico_livesync_json.plugin import LiveSyncJsonPlugin
@@ -54,12 +54,12 @@ class livesyncjson_uploader(Uploader):
     def upload_records(self, records, from_queue):
         if from_queue:
             for entry, change in records.iteritems():
-                jsondata, entry_type = get_jsondata(entry)
+                jsondata, entry_type = self.get_jsondata(entry)
                 if jsondata is not None:
                     self.upload_jsondata(jsondata, change, entry.id, entry_type)
         else:
             for entry in records:
-                jsondata, entry_type = get_jsondata(entry)
+                jsondata, entry_type = self.get_jsondata(entry)
                 if jsondata is not None:
                     self.upload_jsondata(jsondata, SimpleChange.created, entry.id, entry_type)
 
@@ -79,11 +79,11 @@ class livesyncjson_uploader(Uploader):
         else:
             raise ValueError('unknown object ref: {}'.format(obj))
 
-    def add_schema(self, response, schema):
-        data = response.get_json()
+    def add_schema(self, mapping, schema):
+        data = mapping.get_json()
         data['$schema'] = schema
-        response.data = json.dumps(data)
-        return response
+        mapping.data = json.dumps(data)
+        return mapping
 
     def upload_jsondata(self, jsondata, change_type, obj_id, entry_type):
         if change_type == SimpleChange.created:

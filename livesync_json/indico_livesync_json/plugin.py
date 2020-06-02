@@ -11,6 +11,7 @@ from wtforms.fields.core import StringField
 from wtforms.fields.html5 import URLField
 from wtforms.validators import URL, DataRequired
 
+from indico.core.plugins import IndicoPlugin
 from indico.web.forms.base import IndicoForm
 from indico_livesync import LiveSyncPluginBase
 from indico_livesync_json.backend import livesyncjson_backend
@@ -27,7 +28,7 @@ class livesyncjson_settingsform(IndicoForm):
                           description=_("URL <url:port> of tika server to parse file content. If not supplied a local tika server will be instantiated."))
 
 
-class LiveSyncJsonPlugin(LiveSyncPluginBase):
+class LiveSyncJsonPlugin(LiveSyncPluginBase, IndicoPlugin):
     """LiveSync_JSON
 
     Provides the LiveSync-JSON agent for LiveSync
