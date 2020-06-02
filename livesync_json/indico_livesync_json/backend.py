@@ -10,6 +10,7 @@ from __future__ import unicode_literals
 import requests
 import json
 
+from flask_pluginengine import current_plugin
 from indico.core.plugins import IndicoPlugin
 from indico.web.forms.base import IndicoForm
 from indico.modules.events import Event
@@ -31,11 +32,11 @@ class livesyncjson_uploaderError(Exception):
 
 class livesyncjson_uploader(Uploader, IndicoPlugin):
 
-    def __init__(self, *args, **kwargs): 
+    def __init__(self, *args, **kwargs):
         from indico_livesync_json.plugin import LiveSyncJsonPlugin
-        
+
         search_app = LiveSyncJsonPlugin.settings.get('searchapp_url').rstrip('/')
-        endpoint = '/indico/records/'
+        endpoint = '/api/records/'
         self.search_url = '{0}{1}'.format(search_app, endpoint)
         self.headers = {
                     'Content-Type': 'application/json',
@@ -44,11 +45,11 @@ class livesyncjson_uploader(Uploader, IndicoPlugin):
                 }
 
         endpoint = '/schemas/indico/'
-        self.es_events = '$schema:{0}{1}{2}'.format(search_app, endpoint, 'events_v1.1.0.json')
-        self.es_contributions = '$schema:{0}{1}{2}'.format(search_app, endpoint, 'contributions_v1.1.0.json')
-        self.es_subcontributions = '$schema:{0}{1}{2}'.format(search_app, endpoint, 'subcontributions_v1.1.0.json')
-        self.es_attachments = '$schema:{0}{1}{2}'.format(search_app, endpoint, 'attachments_v1.1.0.json')
-        self.es_notes = '$schema:{0}{1}{2}'.format(search_app, endpoint, 'notes_v1.1.0.json')
+        self.es_events = '{0}{1}{2}'.format(search_app, endpoint, 'events_v1.1.0.json')
+        self.es_contributions = '{0}{1}{2}'.format(search_app, endpoint, 'contributions_v1.1.0.json')
+        self.es_subcontributions = '{0}{1}{2}'.format(search_app, endpoint, 'subcontributions_v1.1.0.json')
+        self.es_attachments = '{0}{1}{2}'.format(search_app, endpoint, 'attachments_v1.1.0.json')
+        self.es_notes = '{0}{1}{2}'.format(search_app, endpoint, 'notes_v1.1.0.json')
         self.tika_server = LiveSyncJsonPlugin.settings.get('tika_server')
 
     def upload_records(self, records, from_queue):
@@ -65,25 +66,23 @@ class livesyncjson_uploader(Uploader, IndicoPlugin):
 
     def get_jsondata(self, obj):
         if isinstance(obj, Event):
-            return self.add_schema(EventSchema().jsonify(obj), self.es_events), EntryType.event
+            return self.add_schema(json.loads(EventSchema().jsonify(obj).response[0]), self.es_events), EntryType.event
         elif isinstance(obj, Contribution):
-            return  self.add_schema(ContributionSchema().jsonify(obj), self.es_contributions), EntryType.contribution
+            return  self.add_schema(json.loads(ContributionSchema().jsonify(obj).response[0]), self.es_contributions), EntryType.contribution
         elif isinstance(obj, SubContribution):
-            return  self.add_schema(SubContributionSchema().jsonify(obj), self.es_subcontributions), EntryType.subcontribution
+            return  self.add_schema(json.loads(SubContributionSchema().jsonify(obj).response[0]), self.es_subcontributions), EntryType.subcontribution
         elif isinstance(obj, Attachment):
-            return  self.add_schema(AttachmentSchema().jsonify(obj), self.es_attachments), EntryType.attachment
+            return  self.add_schema(json.loads(AttachmentSchema().jsonify(obj).response[0]), self.es_attachments), EntryType.attachment
         elif isinstance(obj, EventNote):
-            return  self.add_schema(EventNoteSchema().jsonify(obj), self.es_notes), EntryType.note
+            return  self.add_schema(json.loads(EventNoteSchema().jsonify(obj).response[0]), self.es_notes), EntryType.note
         elif isinstance(obj, Category):
             return None
         else:
             raise ValueError('unknown object ref: {}'.format(obj))
 
     def add_schema(self, mapping, schema):
-        data = mapping.get_json()
-        data['$schema'] = schema
-        mapping.data = json.dumps(data)
-        return mapping
+        mapping['$schema'] = schema
+        return json.dumps(mapping)
 
     def upload_jsondata(self, jsondata, change_type, obj_id, entry_type):
         if change_type == SimpleChange.created:
@@ -92,10 +91,10 @@ class livesyncjson_uploader(Uploader, IndicoPlugin):
             search_id = livesyncjson_searchapp_id_map.get_search_id(obj_id, entry_type)
             if search_id:
                 if change_type == SimpleChange.updated:
-                    response = requests.put('{}/{}'.format(self.search_url, search_id), headers=self.headers, 
+                    response = requests.put('{}/{}'.format(self.search_url, search_id), headers=self.headers,
                                             json=jsondata)
                 elif change_type == SimpleChange.deleted:
-                    response = requests.delete('{}/{}'.format(self.search_url, search_id), headers=self.headers, 
+                    response = requests.delete('{}/{}'.format(self.search_url, search_id), headers=self.headers,
                                                json=jsondata)
                 else:
                     pass
