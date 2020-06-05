@@ -44,11 +44,11 @@ class livesyncjson_uploader(Uploader, IndicoPlugin):
                 }
 
         endpoint = '/schemas/indico/'
-        self.es_events = '{0}{1}{2}'.format(search_app, endpoint, 'events_v1.1.0.json')
-        self.es_contributions = '{0}{1}{2}'.format(search_app, endpoint, 'contributions_v1.1.0.json')
-        self.es_subcontributions = '{0}{1}{2}'.format(search_app, endpoint, 'subcontributions_v1.1.0.json')
-        self.es_attachments = '{0}{1}{2}'.format(search_app, endpoint, 'attachments_v1.1.0.json')
-        self.es_notes = '{0}{1}{2}'.format(search_app, endpoint, 'notes_v1.1.0.json')
+        self.es_events = '{0}{1}{2}'.format(search_app, endpoint, 'events_v1.0.0.json')
+        self.es_contributions = '{0}{1}{2}'.format(search_app, endpoint, 'contributions_v1.0.0.json')
+        self.es_subcontributions = '{0}{1}{2}'.format(search_app, endpoint, 'subcontributions_v1.0.0.json')
+        self.es_attachments = '{0}{1}{2}'.format(search_app, endpoint, 'attachments_v1.0.0.json')
+        self.es_notes = '{0}{1}{2}'.format(search_app, endpoint, 'notes_v1.0.0.json')
         self.tika_server = LiveSyncJsonPlugin.settings.get('tika_server')
 
     def upload_records(self, records, from_queue):

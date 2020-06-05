@@ -69,7 +69,7 @@ def _get_event_acl(event):
         acl = ['']
     else:
         acl = set(itertools.chain.from_iterable(_get_identifiers(x.principal) for x in event.acl_entries))
-    return {'read': sorted(acl), 'owner': [], 'update': [], 'delete': []}
+    return {'read': sorted(acl), 'owner': [''], 'update': [''], 'delete': ['']}
 
 
 def _get_attachment_acl(attachment):
@@ -85,7 +85,7 @@ def _get_attachment_acl(attachment):
     acl = set(itertools.chain.from_iterable(_get_identifiers(x) for x in principals))
     if not len(acl):
          acl.add('')
-    return {'read': sorted(acl), 'owner': [], 'update': [], 'delete': []}
+    return {'read': sorted(acl), 'owner': [''], 'update': [''], 'delete': ['']}
 
 
 def _get_obj_acl(obj):
@@ -99,7 +99,7 @@ def _get_obj_acl(obj):
     acl = set(itertools.chain.from_iterable(_get_identifiers(x) for x in principals))
     if not len(acl):
          acl.add('')
-    return {'read': sorted(acl), 'owner': [], 'update': [], 'delete': []}
+    return {'read': sorted(acl), 'owner': [''], 'update': [''], 'delete': ['']}
 
 
 def _get_subcontribution_acl(subcontribution):
@@ -179,82 +179,119 @@ class PersonLinkSchema(mm.Schema):
         fields = ('name', 'affiliation')
 
 
+def _get_event_data(event):
+    id = event.id
+    category_path = _get_category_path(event)
+    event_type = event.type_.title
+    title = event.title
+    description = event.description
+    location = _get_location(event)
+    speakers_chairs = _get_people_list(event)
+    url = event.external_url
+    return {'id':id, 'category_path':category_path, 'event_type':event_type, 'title':title, 'description':description,
+            'location':location, 'speakers_chairs':speakers_chairs, 'url':url}
+
 class EventSchema(mm.ModelSchema):
     _access = mm.Function(_get_event_acl)
-    category_path = mm.Function(_get_category_path)
-    event_type = EnumField(EventType, attribute='type_')
+    _data = mm.Function(_get_event_data)
     creation_date = mm.DateTime(attribute='created_dt')
     start_date = mm.DateTime(attribute='start_dt')
     end_date = mm.DateTime(attribute='end_dt')
-    location = mm.Function(_get_location)
-    speakers_chairs = mm.Function(_get_people_list)
-    url = mm.String(attribute='external_url')
 
     class Meta:
         model = Event
-        fields = ('_access', 'id', 'category_path', 'event_type', 'creation_date', 'start_date', 'end_date',
-                  'location', 'title', 'description', 'speakers_chairs', 'url')
+        fields = ('_access', '_data', 'creation_date', 'start_date', 'end_date')
 
+
+def _get_attachment_data(attachment):
+    id = attachment.id
+    category_path = _get_category_path(attachment)
+    event_id = attachment.folder.event.id
+    contribution_id = _get_attachment_contributionid(attachment)
+    subcontribution_id =_get_attachment_subcontributionid(attachment)
+    filename = attachment.file.filename
+    content = _get_attachment_content(attachment)
+    url = attachment.absolute_download_url
+    
+    return {'id':id, 'category_path':category_path, 'event_id':event_id, 'contribution_id':contribution_id,
+            'subcontribution_id':subcontribution_id, 'filename':filename, 'content':content, 'url':url}
 
 class AttachmentSchema(mm.ModelSchema):
     _access = mm.Function(_get_attachment_acl)
-    category_path = mm.Function(_get_category_path)
-    event_id = mm.Integer(attribute='folder.event.id')
-    contribution_id = mm.Function(_get_attachment_contributionid)
-    subcontribution_id = mm.Function(_get_attachment_subcontributionid)
+    _data = mm.Function(_get_attachment_data)
     creation_date = mm.DateTime(attribute='modified_dt')
-    filename = mm.String(attribute='file.filename')
-    content = mm.Function(_get_attachment_content)
-    url = mm.String(attribute='absolute_download_url')
 
     class Meta:
         model = Event
-        fields = ('_access', 'id', 'category_path', 'event_id', 'contribution_id', 'subcontribution_id',
-                  'creation_date', 'filename', 'content', 'url')
+        fields = ('_access', '_data', 'creation_date')
 
+
+def _get_contribution_data(contribution):
+    id = contribution.id
+    category_path = _get_category_path(contribution)
+    event_id = contribution.event_id
+    title = contribution.title
+    description = contribution.description
+    location = _get_location(contribution)
+    list_of_persons = _get_people_list(contribution)
+    url = _get_contribution_url(contribution)
+    
+    return {'id':id, 'category_path':category_path, 'event_id':event_id,  'title':title, 'description':description,
+            'location':location, 'list_of_persons':list_of_persons, 'url':url}
 
 class ContributionSchema(mm.ModelSchema):
     _access = mm.Function(_get_obj_acl)
-    category_path = mm.Function(_get_category_path)
-    event_id = mm.Integer(attribute='event_id')
+    _data = mm.Function(_get_contribution_data)
     start_date = mm.DateTime(attribute='start_dt')
     end_date = mm.DateTime(attribute='end_dt')
-    location = mm.Function(_get_location)
-    list_of_persons = mm.Function(_get_people_list)
-    url = mm.Function(_get_contribution_url)
 
     class Meta:
         model = Event
-        fields = ('_access', 'id', 'category_path', 'event_id', 'creation_date', 'start_date', 'end_date', 'location',
-                  'title', 'description', 'list_of_persons', 'url')
+        fields = ('_access', '_data', 'start_date', 'end_date')
 
+
+def _get_subcontribution_data(subcontribution):
+    id = subcontribution.id
+    category_path = _get_category_path(subcontribution)
+    event_id = subcontribution.event.id
+    contribution_id = subcontribution.contribution_id
+    title = subcontribution.title
+    description = subcontribution.description
+    location = _get_location_subcontribution(subcontribution)
+    list_of_persons = _get_people_list(subcontribution)
+    url = _get_subcontribution_url(subcontribution)
+    
+    return {'id':id, 'category_path':category_path, 'event_id':event_id, 'contribution_id':contribution_id,
+             'title':title, 'description':description, 'location':location, 'list_of_persons':list_of_persons, 
+             'url':url}
 
 class SubContributionSchema(mm.ModelSchema):
     _access = mm.Function(_get_subcontribution_acl)
-    category_path = mm.Function(_get_category_path)
-    event_id = mm.Integer(attribute='event.id')
-    contribution_id = mm.Integer(attribute='contribution_id')
-    location = mm.Function(_get_location_subcontribution)
-    list_of_persons = mm.Function(_get_people_list)
-    url = mm.Function(_get_subcontribution_url)
+    _data = mm.Function(_get_subcontribution_data)
 
     class Meta:
         model = Event
-        fields = ('_access', 'id', 'category_path', 'event_id', 'contribution_id', 'creation_date', 'start_date',
-                  'end_date', 'location', 'title', 'description', 'list_of_persons', 'url')
+        fields = ('_access', '_data')
+
+
+def _get_eventnote_data(eventnote):
+    id = eventnote.id
+    category_path = _get_category_path(eventnote)
+    event_id = eventnote.event_id
+    contribution_id = _get_eventnote_contributionid(eventnote)
+    subcontribution_id =eventnote.subcontribution_id
+    content = eventnote.html
+    url = _get_eventnote_url(eventnote)
+    
+    return {'id':id, 'category_path':category_path, 'event_id':event_id, 'contribution_id':contribution_id,
+             'subcontribution_id':subcontribution_id, 'content':content, 'url':url}
 
 
 class EventNoteSchema(mm.ModelSchema):
     _access = mm.Function(_get_eventnote_acl)
-    category_path = mm.Function(_get_category_path)
-    event_id = mm.Integer(attribute='event_id')
-    contribution_id = mm.Function(_get_eventnote_contributionid)
-    subcontribution_id = mm.Integer(attribute='subcontribution_id')
+    _data = mm.Function(_get_eventnote_data)
     creation_date = mm.DateTime(attribute='current_revision.created_dt')
-    content = mm.String(attribute='html')
-    url = mm.Function(_get_eventnote_url)
 
     class Meta:
         model = Event
-        fields = ('_access', 'id', 'category_path', 'event_id', 'contribution_id', 'subcontribution_id', 
-                  'creation_date', 'content', 'url')
+        fields = ('_access', '_data', 'creation_date')
