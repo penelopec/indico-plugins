@@ -35,8 +35,8 @@ class EntryType(int, IndicoEnum):
 
 _column_for_types = {
     EntryType.event: 'event_id',
-    EntryType.contribution: 'contribution_id',
-    EntryType.subcontribution: 'subcontribution_id',
+    EntryType.contribution: 'contrib_id',
+    EntryType.subcontribution: 'subcontrib_id',
     EntryType.attachment: 'attachment_id',
     EntryType.note: 'note_id'
 }
