@@ -31,7 +31,7 @@ def _get_location(obj):
 
 def _get_location_subcontribution(subcontribution):
     contribution_id = subcontribution.contribution.id
-    obj = Contribution.get_one(contribution_id)
+    obj = Contribution.get_or_404(contribution_id)
     return _get_location(obj)
 
 
@@ -60,7 +60,7 @@ def _get_category_path(obj):
         event_id = obj.folder.event.id
     else:
         event_id = obj.event.id
-    event = Event.get_one(event_id)
+    event = Event.get_or_404(event_id)
     return event.category.chain_titles[1:]
 
 
@@ -104,7 +104,7 @@ def _get_obj_acl(obj):
 
 def _get_subcontribution_acl(subcontribution):
     contribution_id = subcontribution.contribution.id
-    obj = Contribution.get_one(contribution_id)
+    obj = Contribution.get_or_404(contribution_id)
     return  _get_obj_acl(obj)
 
 
@@ -116,13 +116,13 @@ def _get_eventnote_acl(eventnote):
         contribution_id = eventnote.subcontribution.contribution.id if eventnote.subcontribution else eventnote.contribution.id
 
     if contribution_id:
-        obj = Contribution.get_one(contribution_id)
+        obj = Contribution.get_or_404(contribution_id)
         return  _get_obj_acl(obj)
     elif session_id:
-        obj = Session.get_one(session_id)
+        obj = Session.get_or_404(session_id)
         return  _get_obj_acl(obj)
     else:
-        obj = Event.get_one(event_id)
+        obj = Event.get_or_404(event_id)
         return  _get_event_acl(obj)
 
 

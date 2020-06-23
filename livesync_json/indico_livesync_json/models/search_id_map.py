@@ -55,7 +55,7 @@ def _make_checks():
 
 class livesyncjson_searchapp_id_map(db.Model):
     __tablename__ = 'searchapp_id_map'
-    __table_args__ = tuple(_make_checks()) + ({'schema': 'plugin_livesync'},)
+    __table_args__ = tuple(_make_checks()) + ({'schema': 'plugin_livesync_json'},)
 
     #: Entry ID
     id = db.Column(
@@ -66,7 +66,7 @@ class livesyncjson_searchapp_id_map(db.Model):
 
     #: ID of the cernsearch this entry belongs to
     search_id = db.Column(
-        'elasticsearch_id',
+        'search_id',
         db.Integer,
         nullable=False,
         index=True
@@ -95,7 +95,7 @@ class livesyncjson_searchapp_id_map(db.Model):
 
     #: ID of the search entry contribution
     contrib_id = db.Column(
-        'contribution_id',
+        'contrib_id',
         db.Integer,
         db.ForeignKey('events.contributions.id'),
         index=True,
@@ -104,7 +104,7 @@ class livesyncjson_searchapp_id_map(db.Model):
 
     #: ID of the search entry subcontribution
     subcontrib_id = db.Column(
-        'subcontribution_id',
+        'subcontrib_id',
         db.Integer,
         db.ForeignKey('events.subcontributions.id'),
         index=True,
@@ -178,7 +178,7 @@ class livesyncjson_searchapp_id_map(db.Model):
             lazy='dynamic'
         )
     )
-    
+
     @classmethod
     def get_search_id(cls, oid, obj_type):
         """Get the search_id for a given object type and id.
@@ -186,7 +186,7 @@ class livesyncjson_searchapp_id_map(db.Model):
         :param oid: The id of the object
         :param obj_type: the EntryType of the object
         """
-        
+
         obj = cls.query.get(oid).filter_by(entry_type=obj_type).first()
         if obj is None:
             return None
